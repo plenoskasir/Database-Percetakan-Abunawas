@@ -4,15 +4,21 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
 <title>Abunawas Percetakan</title>
+<!-- PWA Manifest & Pinned App Config -->
 <meta name="theme-color" content="#2563EB">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="manifest" href='data:application/manifest+json,{"name":"Abunawas Percetakan","short_name":"Abunawas","display":"standalone","background_color":"#F7F8FA","theme_color":"#2563EB","icons":[{"src":"https://cdn-icons-png.flaticon.com/512/3063/3063822.png","sizes":"512x512","type":"image/png"}]}'>
 
+<!-- Google Fonts -->
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<!-- Chart.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<!-- QRCode.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<!-- html2pdf.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<!-- html2canvas -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
 <style>
@@ -187,6 +193,7 @@ tr:hover td{background:#FAFBFC}
 <body>
 <div id="toast"></div>
 
+<!-- ═══════════════════════ LOGIN ═══════════════════════ -->
 <div id="pg-login">
   <div style="width:100%;max-width:440px">
     <div style="text-align:center;margin-bottom:28px">
@@ -234,6 +241,7 @@ tr:hover td{background:#FAFBFC}
   </div>
 </div>
 
+<!-- ═══════════════════════ MAIN APP SHELL ═══════════════════════ -->
 <div id="pg-app">
   <div class="topbar">
     <div class="tbar-logo">
@@ -255,6 +263,7 @@ tr:hover td{background:#FAFBFC}
     
     <div class="main">
       
+      <!-- DASHBOARD (BOSS) -->
       <div class="page" id="pg-dashboard">
         <div class="ph">
           <div><div class="pt">Dashboard</div><div class="ps" id="d-date"></div></div>
@@ -283,6 +292,7 @@ tr:hover td{background:#FAFBFC}
         <div class="card"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px"><div class="card-t" style="margin:0">Transaksi Terbaru</div></div><div class="tbl-wrap" id="d-trx"></div></div>
       </div>
 
+      <!-- INPUT TRANSAKSI (SEMUA ROLE) -->
       <div class="page" id="pg-input">
         <div class="ph">
           <div><div class="pt">Input Transaksi Kasir</div><div class="ps">Tambah pesanan ke keranjang lalu buat invoice tagihan</div></div>
@@ -325,7 +335,15 @@ tr:hover td{background:#FAFBFC}
               
               <div id="cart-wrap" style="margin-bottom:16px; background:var(--surf2); border-radius:8px; border:1px solid var(--bdr);"></div>
               
-              <div class="field"><label>Total Keseluruhan Semua Item (Rp)</label><input type="text" id="fi-total" class="auto" readonly placeholder="Rp 0" style="font-size:22px;font-weight:700;color:var(--blue); text-align:right;"></div>
+              <!-- Tambahan Diskon & Ongkir -->
+              <div class="g3" style="align-items:end; margin-bottom:8px; background:var(--blue-l); padding:10px; border-radius:8px; border:1px solid #BFDBFE;">
+                 <div class="field" style="margin:0"><label style="color:var(--blue-d)">Jarak (Km)</label><input type="number" id="fi-jarak" value="0" min="0" oninput="hitungOngkir()" style="font-family:var(--mono); font-weight:bold;"></div>
+                 <div class="field" style="margin:0"><label style="color:var(--blue-d)">Ongkir (Rp)</label><input type="text" id="fi-ongkir" placeholder="0" style="font-family:var(--mono); font-weight:bold;" oninput="this.value=formatRibuan(this.value); renderCart();"></div>
+                 <div class="field" style="margin:0"><label style="color:var(--blue-d)">Diskon (Rp)</label><input type="text" id="fi-diskon" placeholder="0" style="font-family:var(--mono); font-weight:bold; color:var(--red);" oninput="this.value=formatRibuan(this.value); renderCart();"></div>
+              </div>
+              <div style="font-size:10px; color:var(--tx2); margin-bottom:16px;">*Jarak <= 2 KM otomatis gratis ongkir. <br>*Tarif saat ini: <b id="lbl-tarif-km">Rp 2.000</b>/Km (Ubah di Pengaturan Toko).</div>
+
+              <div class="field"><label>Total Keseluruhan (Termasuk Ongkir & Diskon)</label><input type="text" id="fi-total" class="auto" readonly placeholder="Rp 0" style="font-size:22px;font-weight:700;color:var(--blue); text-align:right;"></div>
               <div class="field" style="margin:0"><label>Catatan Keseluruhan (Opsional)</label><input type="text" id="fi-catatan" autocomplete="off" placeholder="Contoh: Ambil hari senin sore..."></div>
             </div>
           </div>
@@ -373,6 +391,7 @@ tr:hover td{background:#FAFBFC}
         </div>
       </div>
 
+      <!-- TRANSAKSI -->
       <div class="page" id="pg-transaksi">
         <div class="ph"><div class="pt">Semua Transaksi</div><button class="btn btn-blue" onclick="showPage('input')">+ Transaksi Baru</button></div>
         <div class="card">
@@ -384,12 +403,47 @@ tr:hover td{background:#FAFBFC}
         </div>
       </div>
 
+      <!-- PIUTANG (UPDATE WARNING MERAH) -->
       <div class="page" id="pg-piutang">
-        <div class="ph"><div class="pt">Piutang Pelanggan</div></div>
+        <div class="ph"><div class="pt">Piutang Pelanggan</div><div class="ps">Warna merah menandakan sudah lewat jatuh tempo!</div></div>
         <div class="g3" style="margin-bottom:16px" id="piu-stats"></div>
         <div class="card"><div class="tbl-wrap" id="piu-tbl"></div></div>
       </div>
 
+      <!-- LACI KASIR (FITUR BARU) -->
+      <div class="page" id="pg-laci">
+        <div class="ph">
+          <div><div class="pt">Setoran & Laci Kasir</div><div class="ps">Perhitungan uang fisik (CASH) di laci toko untuk hari ini.</div></div>
+        </div>
+        <div class="g2" style="align-items:start">
+            <div class="card">
+                <div class="card-t">Modal Awal Laci Pagi Ini</div>
+                <div class="field"><label>Jumlah Modal Laci (Uang Kembalian)</label>
+                    <input type="text" id="lc-modal" placeholder="Contoh: 100.000" style="font-size:20px; font-weight:700; font-family:var(--mono);" oninput="this.value=formatRibuan(this.value); hitungLaci();">
+                </div>
+                <button class="btn btn-blue btn-full" onclick="simpanModalLaci()">Simpan Modal</button>
+            </div>
+            
+            <div class="card">
+                <div class="card-t">Laporan Fisik Hari Ini (<span id="lc-date"></span>)</div>
+                <div style="display:flex; justify-content:space-between; margin-bottom:8px; border-bottom:1px solid var(--bdr); padding-bottom:8px;">
+                    <span style="color:var(--tx2)">Modal Awal Laci:</span> <span style="font-weight:700; font-family:var(--mono)" id="lc-val-modal">Rp 0</span>
+                </div>
+                <div style="display:flex; justify-content:space-between; margin-bottom:8px; border-bottom:1px solid var(--bdr); padding-bottom:8px;">
+                    <span style="color:var(--green)">+ Masuk Tunai (Transaksi Cash):</span> <span style="font-weight:700; font-family:var(--mono); color:var(--green)" id="lc-val-in">Rp 0</span>
+                </div>
+                <div style="display:flex; justify-content:space-between; margin-bottom:12px; border-bottom:1.5px dashed var(--bdr); padding-bottom:12px;">
+                    <span style="color:var(--red)">- Keluar Tunai (Belanja Boss):</span> <span style="font-weight:700; font-family:var(--mono); color:var(--red)" id="lc-val-out">Rp 0</span>
+                </div>
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <span style="font-weight:800; font-size:14px;">Total Uang di Laci:</span> 
+                    <span style="font-weight:800; font-size:24px; font-family:var(--mono); color:var(--blue);" id="lc-val-total">Rp 0</span>
+                </div>
+            </div>
+        </div>
+      </div>
+
+      <!-- DATA PENGELUARAN & KULAKAN (RUANG KHUSUS BOSS) -->
       <div class="page" id="pg-pengeluaran">
         <div class="ph">
           <div><div class="pt">Input Belanja & Pengeluaran (Kulakan)</div><div class="ps">Catat pembelian bahan baku, bayar makelar cetak, dan biaya operasional.</div></div>
@@ -419,7 +473,8 @@ tr:hover td{background:#FAFBFC}
             <div class="field"><label>Total Nominal Tagihan (Rp)</label><input id="mv-total" type="text" placeholder="Ketik angka..." oninput="this.value=formatRibuan(this.value);" style="font-family:var(--mono); font-weight:700;"></div>
             <div class="field"><label>Status Pembayaran Boss</label>
               <select id="mv-status" style="font-weight:600">
-                <option value="Lunas">Sudah Dibayar Lunas (Transfer/Cash)</option>
+                <option value="Lunas">Sudah Dibayar Lunas (Cash Dari Laci)</option>
+                <option value="Lunas Transfer">Sudah Dibayar Lunas (Transfer Rekening)</option>
                 <option value="Hutang">Belum Bayar (Kasbon / Hutang Vendor)</option>
               </select>
             </div>
@@ -432,18 +487,21 @@ tr:hover td{background:#FAFBFC}
         <div class="card"><div class="card-t">Riwayat Belanja & Pengeluaran</div><div class="tbl-wrap" id="pengeluaran-tbl"></div></div>
       </div>
 
+      <!-- HUTANG VENDOR / MAKELAR -->
       <div class="page" id="pg-hutang-vendor">
         <div class="ph"><div class="pt">Hutang ke Vendor / Makelar</div><div class="ps">Daftar tagihan modal / bahan yang belum Anda bayarkan ke Vendor.</div></div>
         <div class="g3" style="margin-bottom:16px" id="hv-stats"></div>
         <div class="card"><div class="tbl-wrap" id="hv-tbl"></div></div>
       </div>
 
+      <!-- HUTANG PENGELUARAN -->
       <div class="page" id="pg-hutang-pengeluaran">
         <div class="ph"><div class="pt">Hutang Tagihan Operasional</div></div>
         <div class="g3" style="margin-bottom:16px" id="hp-stats"></div>
         <div class="card"><div class="tbl-wrap" id="hp-tbl"></div></div>
       </div>
 
+      <!-- DATA PELANGGAN -->
       <div class="page" id="pg-pelanggan">
         <div class="ph">
           <div><div class="pt">Data Master Pelanggan</div><div class="ps">Database kontak customer Anda untuk Auto-fill WhatsApp</div></div>
@@ -452,6 +510,7 @@ tr:hover td{background:#FAFBFC}
         <div class="card"><div class="tbl-wrap" id="pel-tbl"></div></div>
       </div>
 
+      <!-- DATA VENDOR -->
       <div class="page" id="pg-vendor">
         <div class="ph">
           <div><div class="pt">Data Master Vendor</div><div class="ps">Daftar tempat Anda kulakan bahan / cetakan luar</div></div>
@@ -460,6 +519,7 @@ tr:hover td{background:#FAFBFC}
         <div class="card"><div class="tbl-wrap" id="vnd-tbl"></div></div>
       </div>
 
+      <!-- BARANG -->
       <div class="page" id="pg-barang">
         <div class="ph">
           <div><div class="pt">Data Barang & Harga</div><div class="ps">Sistem harga bertingkat otomatis (Tiered Pricing)</div></div>
@@ -472,6 +532,7 @@ tr:hover td{background:#FAFBFC}
         <div class="card"><div class="tbl-wrap" id="brg-tbl"></div></div>
       </div>
 
+      <!-- LAPORAN -->
       <div class="page" id="pg-laporan">
         <div class="ph"><div class="pt">Laporan Lengkap</div></div>
         <div class="g3" style="margin-bottom:16px" id="lap-stats"></div>
@@ -479,21 +540,24 @@ tr:hover td{background:#FAFBFC}
         <div class="card" style="margin-top:0"><div class="card-t">Performa Karyawan (Berdasarkan Omzet)</div><div class="tbl-wrap" id="lap-kar"></div></div>
       </div>
 
+      <!-- DASHBOARD ADMIN -->
       <div class="page" id="pg-dash-admin">
         <div class="ph"><div class="pt">Dashboard Operasional</div></div>
         <div class="g2" style="margin-bottom:16px" id="da-stats"></div>
         <div class="card"><div class="card-t">Transaksi Hari Ini</div><div class="tbl-wrap" id="da-trx"></div></div>
       </div>
 
+      <!-- PENGATURAN TOKO (REKENING & QRIS) -->
       <div class="page" id="pg-setting">
-        <div class="ph"><div class="pt">Pengaturan Toko</div><div class="ps">Ubah nomor rekening dan link gambar QRIS langsung dari sini.</div></div>
+        <div class="ph"><div class="pt">Pengaturan Toko</div><div class="ps">Ubah nomor rekening, tarif ongkir, dan gambar QRIS.</div></div>
         
         <div class="g2" style="align-items:start">
             <div class="card">
-               <div class="card-t">Data Rekening Bank</div>
+               <div class="card-t">Data Rekening & Pengiriman</div>
                <div class="field"><label>Rekening 1 (Misal BCA)</label><input type="text" id="set-bank1" placeholder="BCA: 123456789"></div>
                <div class="field"><label>Rekening 2 (Misal BRI)</label><input type="text" id="set-bank2" placeholder="BRI: 987654321"></div>
                <div class="field"><label>Atas Nama (A/N)</label><input type="text" id="set-an" placeholder="a.n Toko Abunawas"></div>
+               <div class="field"><label>Tarif Ongkos Kirim per KM (Rp)</label><input type="number" id="set-ongkir-km" placeholder="2000"></div>
             </div>
             
             <div class="card">
@@ -501,7 +565,7 @@ tr:hover td{background:#FAFBFC}
                <div class="field"><label>Link Gambar QRIS (Bisa pakai link Google Drive / Link GitHub)</label>
                    <input type="text" id="set-qris-img" placeholder="Paste link di sini...">
                    <div style="font-size:10px; color:var(--tx3); margin-top:4px; line-height:1.4;">
-                       <b>Sangat disarankan:</b> Upload foto ke Github Anda (qris.jpg atau qris.png), lalu masukkan linknya ke sini agar gambar tidak pernah diblokir saat cetak PDF.
+                       <b>Sangat disarankan:</b> Upload foto ke Github Anda (qris.jpg), lalu masukkan linknya ke sini agar gambar tidak pernah diblokir saat cetak PDF.
                    </div>
                </div>
                <div class="field"><label>Link Teks QRIS (Untuk di WA)</label>
@@ -512,11 +576,13 @@ tr:hover td{background:#FAFBFC}
         </div>
       </div>
 
+      <!-- USER -->
       <div class="page" id="pg-user">
         <div class="ph"><div class="pt">Manajemen Karyawan / User</div><button class="btn btn-blue" onclick="openModalUser()">+ Tambah User</button></div>
         <div class="card"><div class="tbl-wrap" id="user-tbl"></div></div>
       </div>
 
+      <!-- BACKUP -->
       <div class="page" id="pg-backup">
         <div class="ph"><div class="pt">Backup & Integrasi Google Sheets</div></div>
         <div class="g2" style="align-items:start">
@@ -526,7 +592,7 @@ tr:hover td{background:#FAFBFC}
               <input type="text" id="setting-sheet-url" placeholder="https://script.google.com/macros/s/AKfycby.../exec">
             </div>
             <button class="btn btn-green btn-full" id="btn-sync" onclick="saveSheetUrl()">Simpan URL & Jalankan Sync</button>
-            <div style="font-size:11px;color:var(--tx2);margin-top:12px;line-height:1.5;">Masukkan URL yang Anda dapatkan setelah mendeploy kode Google Apps Script sebagai "Web App".</div>
+            <div style="font-size:11px;color:var(--tx2);margin-top:12px;line-height:1.5;">Masukkan URL yang Anda dapatkan setelah mendeploy kode Google Apps Script sebagai "Web App". Transaksi akan otomatis sinkron tiap 5 detik.</div>
           </div>
           
           <div class="card"><div class="card-t">Export Data Offline</div>
@@ -538,13 +604,20 @@ tr:hover td{background:#FAFBFC}
         </div>
       </div>
 
+      <!-- KASIR RIWAYAT KHUSUS KASIR -->
       <div class="page" id="pg-kasir-riwayat">
         <div class="ph"><div class="pt">Riwayat Transaksi Saya</div><div class="ps">Semua nota yang telah Anda buat</div></div>
         <div class="card"><div class="tbl-wrap" id="kasir-riwayat-tbl"></div></div>
       </div>
 
-    </div></div>
-</div><div class="modal-bg" id="mo-barang">
+    </div><!-- /main -->
+  </div>
+</div><!-- /pg-app -->
+
+
+<!-- ═══════════════════════ MODALS ═══════════════════════ -->
+
+<div class="modal-bg" id="mo-barang">
   <div class="modal">
     <div class="modal-t" id="mo-barang-title">Tambah Barang</div>
     <div class="g2">
@@ -620,6 +693,7 @@ tr:hover td{background:#FAFBFC}
   </div>
 </div>
 
+<!-- Modal Pilih Metode Pelunasan -->
 <div class="modal-bg" id="mo-pelunasan">
   <div class="modal" style="max-width:320px;">
     <div class="modal-t" style="text-align:center;">Konfirmasi Pelunasan ✔️</div>
@@ -628,8 +702,8 @@ tr:hover td{background:#FAFBFC}
     <div class="field">
       <select id="pl-metode" style="font-size:14px; font-weight:700;">
         <option value="Cash">Tunai / Cash</option>
-        <option value="BCA">Transfer BCA</option>
-        <option value="BRI">Transfer BRI</option>
+        <option value="Transfer BCA">Transfer BCA</option>
+        <option value="Transfer BRI">Transfer BRI</option>
         <option value="QRIS">QRIS</option>
       </select>
     </div>
@@ -640,9 +714,11 @@ tr:hover td{background:#FAFBFC}
   </div>
 </div>
 
+<!-- Modal Nota (Siap Print & PDF) -->
 <div class="modal-bg" id="mo-nota">
   <div class="modal" style="max-width:440px; background:var(--surf2); padding:20px;">
     
+    <!-- Kotak Centang Pengaturan Status & Jadwal Ambil -->
     <div class="hide-on-print" data-html2canvas-ignore="true" style="margin-bottom: 12px; background: var(--amber-l); border: 1px solid var(--amber); padding: 10px; border-radius: 8px;">
       <label style="cursor: pointer; display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 600; color: var(--amber-d);">
         <input type="checkbox" id="cb-tampil-status" onchange="refreshNotaView()" style="width: 16px; height: 16px; accent-color: var(--amber-d);"> 
@@ -651,7 +727,8 @@ tr:hover td{background:#FAFBFC}
     </div>
 
     <div id="nota-preview-card">
-      </div>
+      <!-- Injeksi HTML via JS -->
+    </div>
     
     <div class="nota-acts" style="display:flex; gap:8px; flex-wrap:wrap; margin-top:0;">
       <button class="btn btn-ghost" style="flex:1; min-width:60px; border:1px solid var(--bdr);" onclick="closeModal('mo-nota')">Tutup</button>
@@ -663,6 +740,7 @@ tr:hover td{background:#FAFBFC}
   </div>
 </div>
 
+<!-- Modal Konfirmasi Sheets -->
 <div class="modal-bg" id="mo-sheets-confirm">
   <div class="modal" style="max-width:340px; text-align:center;">
     <div style="font-size:32px; margin-bottom:12px;">☁️</div>
@@ -707,7 +785,7 @@ function cleanRibuan(text) {
 function fmt(n){return Math.round(n).toLocaleString('id-ID');}
 function fmtRp(n){return 'Rp '+fmt(n);}
 
-// Load Data dari LocalStorage Browser (agar tidak hilang saat direfresh)
+// Load Data dari LocalStorage Browser
 var USERS = JSON.parse(localStorage.getItem('abunawas_usr')) || [
   {u:'boss', p:'1234', nama:'Boss Sistem', role:'boss', wa:'08111111111', aktif:true},
   {u:'admin',p:'1234', nama:'Admin Toko',  role:'admin',wa:'08222222222', aktif:true},
@@ -718,6 +796,7 @@ var TOKO = JSON.parse(localStorage.getItem('abunawas_toko')) || {
   bank1: 'BCA: 73827328327',
   bank2: 'BRI: 19382992013213',
   an: 'a.n ABUNAWAS PERCETAKAN',
+  ongkirKm: 2000,
   qrisImg: 'https://plenoskasir.github.io/Database-Percetakan-Abunawas/qris.jpg',
   qrisLink: 'https://bit.ly/Bayar-Abunawas'
 };
@@ -738,7 +817,7 @@ var BARANG = JSON.parse(localStorage.getItem('abunawas_brg')) || [
 ];
 
 var TRX = JSON.parse(localStorage.getItem('abunawas_trx')) || [
-  {id:'INV-2026-04-001',tgl:dMinus(0),pelanggan:'Budi Santoso',wa:'081234567890',alamat:'Jl. Merdeka No. 1, Kepanjen', items:[{kode:'BNR-001',barang:'Banner Flexi',qty:4,harga:25000,total:100000,modal:48000}], total:100000,modal:48000,dibayar:100000,sisa:0,bayar:'Lunas',metode:'BCA',order:'Selesai',kasir:'Andi Pratama',deadline:'2026-04-28 14:00',catatan:'Cetak Highres'}
+  {id:'INV-2026-04-001',tgl:dMinus(0),pelanggan:'Budi Santoso',wa:'081234567890',alamat:'Jl. Merdeka No. 1, Kepanjen', items:[{kode:'BNR-001',barang:'Banner Flexi',qty:4,harga:25000,total:100000,modal:48000}], total:100000,modal:48000,dibayar:100000,sisa:0,bayar:'Lunas',metode:'Cash',order:'Selesai',kasir:'Andi Pratama',deadline:'2026-04-28 14:00',catatan:'Cetak Highres', diskon:0, ongkir:0}
 ];
 var trxCtr = TRX.length > 0 ? parseInt(TRX[0].id.split('-').pop()) + 1 : 1; 
 
@@ -747,6 +826,8 @@ var PENGELUARAN = JSON.parse(localStorage.getItem('abunawas_peng')) || [
   {id:'EXP-002',tgl:dMinus(2),ket:'Cetak Banner Pelanggan X',kategori:'Belanja Vendor / Bahan',vendor:'Vendor Spanduk Cepat',total:80000,status:'Hutang'},
   {id:'EXP-003',tgl:dMinus(0),ket:'Bayar Listrik Toko',kategori:'Operasional Toko',vendor:'',total:250000,status:'Lunas'}
 ];
+
+var MODAL_LACI = JSON.parse(localStorage.getItem('abunawas_laci')) || {};
 
 // Fungsi untuk menyimpan semua perubahan ke HP/Komputer
 function saveData() {
@@ -757,6 +838,7 @@ function saveData() {
   localStorage.setItem('abunawas_peng', JSON.stringify(PENGELUARAN));
   localStorage.setItem('abunawas_usr', JSON.stringify(USERS));
   localStorage.setItem('abunawas_toko', JSON.stringify(TOKO));
+  localStorage.setItem('abunawas_laci', JSON.stringify(MODAL_LACI));
   
   // Auto-Sync di belakang layar setiap kali ada data disimpan
   autoSyncToSheets();
@@ -766,7 +848,7 @@ var syncTimeout;
 function autoSyncToSheets() {
   clearTimeout(syncTimeout);
   syncTimeout = setTimeout(function() {
-      syncToSheets(true); // true = mode diam/silent
+      syncToSheets(true); // true = mode diam/silent tanpa alert
   }, 5000); // Jeda 5 detik agar tidak spam server
 }
 
@@ -777,8 +859,9 @@ var MENUS = {
     {id:'input',label:'Input Transaksi',ico:'pen'},
     {id:'transaksi',label:'Semua Transaksi',ico:'list'},
     {id:'piutang',label:'Data Piutang',ico:'clock'},
-    {sec:'Ruang Boss (Belanja)'},
+    {sec:'Ruang Boss & Keuangan'},
     {id:'pengeluaran',label:'Input Belanja / Kulakan',ico:'receipt'},
+    {id:'laci',label:'Setoran Laci Kasir',ico:'receipt'},
     {id:'hutang-vendor',label:'Hutang ke Vendor',ico:'users'},
     {id:'hutang-pengeluaran',label:'Tagihan Operasional',ico:'arrowud'},
     {sec:'Data Master'},
@@ -799,6 +882,7 @@ var MENUS = {
     {id:'piutang',label:'Data Piutang',ico:'clock'},
     {sec:'Keuangan Khusus'},
     {id:'pengeluaran',label:'Input Belanja Vendor',ico:'receipt'},
+    {id:'laci',label:'Setoran Laci Kasir',ico:'receipt'},
     {id:'hutang-vendor',label:'Hutang Vendor',ico:'users'},
     {id:'hutang-pengeluaran',label:'Tagihan Operasional',ico:'arrowud'},
     {sec:'Master'},
@@ -809,6 +893,7 @@ var MENUS = {
   kasir:[
     {sec:'Menu Kasir'},
     {id:'input',label:'Input Transaksi',ico:'pen'},
+    {id:'laci',label:'Setoran Shift Saya',ico:'receipt'},
     {id:'kasir-riwayat',label:'Riwayat Saya',ico:'list'}
   ]
 };
@@ -1207,13 +1292,54 @@ function showPage(id){
   }
 
   var fn={
-    'dashboard':renderDash, 'input':function(){populateFiBrg(); renderCart();}, 'transaksi':renderTrx, 'piutang':renderPiutang,
+    'dashboard':renderDash, 'input':function(){populateFiBrg(); renderCart(); document.getElementById('lbl-tarif-km').textContent = fmtRp(TOKO.ongkirKm);}, 'transaksi':renderTrx, 'piutang':renderPiutang,
     'pengeluaran':function(){populateFiVnd(); renderPengeluaran();}, 'hutang-pengeluaran':renderHutangPengeluaran, 'pelanggan':renderPelanggan,
     'barang':renderBrg, 'laporan':renderLaporan, 'dash-admin':renderDashAdmin,
     'user':renderUser, 'kasir-riwayat':renderKasirRiwayat, 'vendor':renderVendor, 'hutang-vendor':renderHutangVendor,
-    'setting':renderSetting
+    'setting':renderSetting, 'laci': renderLaci
   };
   if(fn[id]) try{fn[id]();}catch(e){console.error('Render error:',id,e);}
+}
+
+/* ════════════════ MENU LACI KASIR ════════════════ */
+function renderLaci() {
+  let d = nowDate();
+  document.getElementById('lc-date').textContent = d;
+  
+  let modalLaci = MODAL_LACI[d] || 0;
+  document.getElementById('lc-modal').value = modalLaci > 0 ? formatRibuan(modalLaci) : '';
+  document.getElementById('lc-val-modal').textContent = fmtRp(modalLaci);
+
+  // Hitung Cash In: Transaksi Lunas atau DP yang dibayar dengan metode "Cash" pada hari ini.
+  let cashIn = 0;
+  TRX.forEach(t => {
+     if(t.tgl === d && t.metode === 'Cash' && t.dibayar > 0) {
+         cashIn += t.dibayar;
+     }
+  });
+
+  // Hitung Cash Out: Pengeluaran yang statusnya "Lunas" (Cash dari laci) pada hari ini.
+  let cashOut = 0;
+  PENGELUARAN.forEach(p => {
+     if(p.tgl === d && p.status === 'Lunas') {
+         cashOut += p.total;
+     }
+  });
+
+  document.getElementById('lc-val-in').textContent = '+ ' + fmtRp(cashIn);
+  document.getElementById('lc-val-out').textContent = '- ' + fmtRp(cashOut);
+  
+  let finalLaci = modalLaci + cashIn - cashOut;
+  document.getElementById('lc-val-total').textContent = fmtRp(finalLaci);
+}
+
+function simpanModalLaci() {
+  let m = cleanRibuan(document.getElementById('lc-modal').value);
+  let d = nowDate();
+  MODAL_LACI[d] = m;
+  saveData();
+  toast('Modal laci tersimpan!');
+  renderLaci();
 }
 
 /* ════════════════ MENU PENGATURAN TOKO (REKENING & QRIS) ════════════════ */
@@ -1221,6 +1347,7 @@ function renderSetting() {
     document.getElementById('set-bank1').value = TOKO.bank1 || '';
     document.getElementById('set-bank2').value = TOKO.bank2 || '';
     document.getElementById('set-an').value = TOKO.an || '';
+    document.getElementById('set-ongkir-km').value = TOKO.ongkirKm || 2000;
     document.getElementById('set-qris-img').value = TOKO.qrisImg || '';
     document.getElementById('set-qris-link').value = TOKO.qrisLink || '';
 }
@@ -1230,6 +1357,7 @@ function simpanSetting() {
     TOKO.bank2 = document.getElementById('set-bank2').value.trim();
     TOKO.an = document.getElementById('set-an').value.trim();
     TOKO.qrisLink = document.getElementById('set-qris-link').value.trim();
+    TOKO.ongkirKm = parseInt(document.getElementById('set-ongkir-km').value) || 2000;
     
     let rawQrisImg = document.getElementById('set-qris-img').value.trim();
     
@@ -1243,7 +1371,7 @@ function simpanSetting() {
     
     TOKO.qrisImg = rawQrisImg;
     saveData();
-    toast('✔️ Pengaturan Rekening & QRIS berhasil disimpan!', 2500);
+    toast('✔️ Pengaturan Toko berhasil disimpan!', 2500);
 }
 
 /* ════════════════ DASHBOARD KHUSUS BOSS ════════════════ */
@@ -1417,6 +1545,16 @@ function tambahKeKeranjang() {
   toast('✔️ Barang ditambahkan ke daftar pesanan!', 1500);
 }
 
+function hitungOngkir() {
+    let jarak = parseFloat(document.getElementById('fi-jarak').value) || 0;
+    let ongkir = 0;
+    if (jarak > 2) {
+        ongkir = (jarak - 2) * TOKO.ongkirKm;
+    }
+    document.getElementById('fi-ongkir').value = formatRibuan(ongkir);
+    renderCart();
+}
+
 function renderCart() {
   let wrap = document.getElementById('cart-wrap');
   if(!wrap) return;
@@ -1429,10 +1567,10 @@ function renderCart() {
   }
 
   let html = '<table style="margin-bottom:0;"><thead><tr><th>Barang / Jasa</th><th style="text-align:center">Qty / Luas</th><th style="text-align:right">Subtotal</th><th style="width:30px"></th></tr></thead><tbody>';
-  let grandTotal = 0;
+  let subtotal = 0;
   
   CART.forEach((item, idx) => {
-      grandTotal += item.total;
+      subtotal += item.total;
       html += `<tr>
           <td style="font-weight:600; line-height:1.4;">${item.barang}<br><span style="font-size:10px; color:var(--tx2); font-family:var(--mono);">${fmtRp(item.harga)}/satuan</span></td>
           <td style="text-align:center;">x${item.qty}</td>
@@ -1442,6 +1580,12 @@ function renderCart() {
   });
   html += '</tbody></table>';
   wrap.innerHTML = html;
+
+  let diskon = cleanRibuan(document.getElementById('fi-diskon').value);
+  let ongkir = cleanRibuan(document.getElementById('fi-ongkir').value);
+  
+  let grandTotal = subtotal - diskon + ongkir;
+  if(grandTotal < 0) grandTotal = 0;
 
   document.getElementById('fi-total').value = fmtRp(grandTotal);
   
@@ -1457,10 +1601,14 @@ function hapusDariKeranjang(idx) {
 }
 
 function hitungSisaDP() {
-  var total = CART.reduce((sum, item) => sum + item.total, 0);
+  let subtotal = CART.reduce((sum, item) => sum + item.total, 0);
+  let diskon = cleanRibuan(document.getElementById('fi-diskon').value);
+  let ongkir = cleanRibuan(document.getElementById('fi-ongkir').value);
+  let grandTotal = subtotal - diskon + ongkir;
+  if(grandTotal < 0) grandTotal = 0;
+
   var dp = cleanRibuan(document.getElementById('fi-dp-val').value);
-  
-  var sisa = total - dp;
+  var sisa = grandTotal - dp;
   if(sisa < 0) sisa = 0;
   
   var sisaEl = document.getElementById('fi-dp-sisa');
@@ -1477,10 +1625,14 @@ function toggleDP(prefix) {
   if(val === 'DP') {
       wrap.style.display = 'block';
       
-      var totalNum = CART.reduce((sum, item) => sum + item.total, 0);
+      let subtotal = CART.reduce((sum, item) => sum + item.total, 0);
+      let diskon = cleanRibuan(document.getElementById('fi-diskon').value);
+      let ongkir = cleanRibuan(document.getElementById('fi-ongkir').value);
+      let grandTotal = subtotal - diskon + ongkir;
+      if(grandTotal < 0) grandTotal = 0;
       
-      if(!inp.value && totalNum > 0) {
-          inp.value = formatRibuan(Math.round(totalNum / 2));
+      if(!inp.value && grandTotal > 0) {
+          inp.value = formatRibuan(Math.round(grandTotal / 2));
       }
       document.getElementById('fi-dp-lbl').textContent = 'Nominal Uang Titipan (Rp)';
       hitungSisaDP();
@@ -1506,8 +1658,13 @@ function simpanTrxPage(actionType = 'simpan'){
   if(!nama){ alert('Mohon isi nama pelanggan terlebih dahulu!'); return; }
   if(CART.length === 0) { alert('Daftar pesanan (keranjang) masih kosong! Silakan tambah barang cetakan terlebih dahulu.'); return; }
   
-  var total = CART.reduce((sum, item) => sum + item.total, 0);
+  var subtotal = CART.reduce((sum, item) => sum + item.total, 0);
   var modal = CART.reduce((sum, item) => sum + item.modal, 0);
+  let diskon = cleanRibuan(document.getElementById('fi-diskon').value);
+  let ongkir = cleanRibuan(document.getElementById('fi-ongkir').value);
+  
+  var total = subtotal - diskon + ongkir;
+  if(total < 0) total = 0;
   
   var dibayar = 0;
   if(bayar === 'Lunas') dibayar = total;
@@ -1531,19 +1688,21 @@ function simpanTrxPage(actionType = 'simpan'){
   TRX.unshift({
     id:id,tgl:nowDate(),pelanggan:nama,wa:wa,alamat:alamat,
     items:itemsToSave, total:total, modal:modal, 
-    bayar:bayar,dibayar:dibayar,sisa:sisa,metode:'',
-    order:order,kasir:curUser.nama,deadline:deadline,catatan:catatan
+    bayar:bayar,dibayar:dibayar,sisa:sisa,metode:(bayar==='Lunas'?'Cash':''),
+    order:order,kasir:curUser.nama,deadline:deadline,catatan:catatan,
+    diskon: diskon, ongkir: ongkir
   });
   
   // Bersihkan form
   document.getElementById('fi-nama').value=''; document.getElementById('fi-wa').value=''; document.getElementById('fi-alamat').value=''; 
   document.getElementById('fi-kode').value=''; document.getElementById('fi-qty').value='1'; document.getElementById('fi-catatan').value=''; document.getElementById('fi-harga').value=''; 
+  document.getElementById('fi-jarak').value='0'; document.getElementById('fi-ongkir').value=''; document.getElementById('fi-diskon').value=''; 
   document.querySelector('input[name="fi_bayar"][value="Hutang"]').checked = true; toggleDP('fi');
   
   CART = []; // Kosongkan keranjang
   renderCart();
   
-  saveData(); // Auto-save ke HP
+  saveData(); // Auto-save ke HP & Cloud
   toast('✔️ Transaksi berhasil disimpan!', 2500);
   
   if (actionType === 'nota') {
@@ -1611,7 +1770,7 @@ function prosesPelunasan() {
   }
 }
 
-/* ════════════════ PIUTANG DENGAN AI ════════════════ */
+/* ════════════════ PIUTANG (WARNING MERAH OVERDUE) ════════════════ */
 function renderPiutang(){
   var data=TRX.filter(function(t){return t.sisa > 0;});
   var tot=data.reduce(function(s,t){return s+t.sisa;},0);
@@ -1622,13 +1781,29 @@ function renderPiutang(){
     sc('Total Piutang Mengendap',fmtRp(tot),'color:var(--red)','Wajib ditagih','color:var(--red)')+
     sc('Tunggakan Terbesar',fmtRp(mx),'color:var(--amber)','','color:var(--tx2)');
     
+  let now = new Date();
+    
   var rows=data.map(function(t){
-    return '<tr><td style="font-weight:600">'+t.pelanggan+'<br><span class="mono" style="font-weight:400">'+t.id+'</span></td><td>'+t.wa+'</td>'+
-      '<td style="font-weight:700;color:var(--red)">'+fmtRp(t.sisa)+'</td>'+
-      '<td><span style="font-family:var(--mono);font-size:11px">'+t.deadline+'</span></td>'+
-      '<td><button class="btn btn-green btn-xs" onclick="bukaPelunasan(\''+t.id+'\')">Lunas</button> '+
-      '<button class="btn btn-wa btn-xs" onclick="waReminder(\''+t.wa+'\',\''+t.pelanggan+'\','+t.sisa+')">WA Standar</button> '+
-      '<button class="btn btn-ai btn-xs" onclick="waReminderAI(\''+t.wa+'\',\''+t.pelanggan+'\','+t.sisa+',\''+t.deadline+'\')">✨ WA Pintar</button></td></tr>';
+    let isOverdue = false;
+    if(t.deadline) {
+        let dl = new Date(t.deadline);
+        if(dl < now) isOverdue = true;
+    }
+    
+    let trStyle = isOverdue ? 'background: var(--red-l);' : '';
+    let textStyle = isOverdue ? 'color: var(--red-d);' : '';
+    let warningBadge = isOverdue ? '<br><span style="font-size:10px;color:var(--red);font-weight:800;background:#fff;padding:2px 6px;border-radius:4px;border:1px solid var(--red);">⚠️ JATUH TEMPO</span>' : '';
+
+    return `<tr style="${trStyle}">
+      <td style="font-weight:600; ${textStyle}">${t.pelanggan}<br><span class="mono" style="font-weight:400; color:var(--tx2)">${t.id}</span></td>
+      <td>${t.wa}</td>
+      <td style="font-weight:700;color:var(--red)">${fmtRp(t.sisa)}</td>
+      <td><span style="font-family:var(--mono);font-size:11px; ${textStyle}">${t.deadline}</span> ${warningBadge}</td>
+      <td>
+        <button class="btn btn-green btn-xs" onclick="bukaPelunasan('${t.id}')">Lunas</button> 
+        <button class="btn btn-wa btn-xs" onclick="waReminder('${t.wa}','${t.pelanggan}',${t.sisa})">WA Standar</button> 
+        <button class="btn btn-ai btn-xs" onclick="waReminderAI('${t.wa}','${t.pelanggan}',${t.sisa},'${t.deadline}')">✨ WA Pintar</button>
+      </td></tr>`;
   }).join('');
   document.getElementById('piu-tbl').innerHTML='<table><thead><tr><th>Pelanggan</th><th>WhatsApp</th><th>Sisa Tagihan</th><th>Deadline Janji</th><th>Aksi Pelunasan</th></tr></thead><tbody>'+rows+'</tbody></table>';
 }
@@ -1650,7 +1825,7 @@ function renderPengeluaran(){
       '<td style="font-weight:600">'+v.ket+ketExtra+'</td>'+
       '<td><span class="badge bg-gray">'+v.kategori+'</span></td>'+
       '<td style="font-weight:700;color:var(--amber)">'+fmtRp(v.total)+'</td>'+
-      '<td>'+badgeBayar(v.status)+'</td>'+
+      '<td>'+badgeBayar(v.status.includes('Lunas')?'Lunas':'Hutang')+'</td>'+
       '<td>'+(isHutang?'<button class="btn btn-green btn-xs" onclick="lunasPengeluaran('+i+')">Tandai Lunas</button>':'')+'</td></tr>';
   }).join('');
   document.getElementById('pengeluaran-tbl').innerHTML='<table><thead><tr><th>ID / Tgl</th><th>Keterangan Belanja / Tagihan</th><th>Kategori</th><th>Total Nominal</th><th>Status</th><th>Aksi</th></tr></thead><tbody>'+(rows||'<tr><td colspan="6" style="text-align:center">Data kosong.</td></tr>')+'</tbody></table>';
@@ -1662,6 +1837,7 @@ function lunasPengeluaran(i){
     renderPengeluaran();
     renderHutangPengeluaran();
     renderHutangVendor();
+    if(document.getElementById('pg-laci') && document.getElementById('pg-laci').classList.contains('on')) renderLaci();
     toast('Tagihan belanja sudah dibayar!');
 }
 
@@ -1983,14 +2159,14 @@ async function bagikanGambarNota() {
   }
 }
 
-/* ════════════════ DESAIN & LOGIKA NOTA TERBARU (PISAH INVOICE & LUNAS) ════════════════ */
+/* ════════════════ DESAIN & LOGIKA NOTA TERBARU ════════════════ */
 function showNota(id){
   var t=TRX.find(function(x){return x.id===id;});
   if(!t) return;
   notaForWA = t; 
   currentNotaId = id;
   
-  // Default logika centang: Jika sudah Lunas/DP, centang otomatis nyala. Jika Hutang, centang mati.
+  // Default logika centang
   var cb = document.getElementById('cb-tampil-status');
   if(cb) {
       cb.checked = (t.bayar === 'Lunas' || t.bayar === 'DP');
@@ -2014,7 +2190,7 @@ function buildNotaInner(t, isTampil) {
   var docTitle = isTampil ? 'BUKTI PENGAMBILAN BARANG' : 'INVOICE / TAGIHAN PESANAN';
 
   // Render Items (Keranjang)
-  var trxItems = t.items || [{kode: t.kode, barang: t.barang, qty: t.qty, harga: t.harga, total: t.total}];
+  var trxItems = t.items || [{kode: t.kode, barang: t.barang, qty: t.qty, harga: t.harga, total: (t.total + (t.diskon||0) - (t.ongkir||0))}];
   var itemRows = trxItems.map(i => `
     <div style="display:flex; justify-content:space-between; align-items:flex-start; padding:6px 0; font-size:13px; border-bottom:1px dashed #F3F4F6;">
        <div style="flex:1;">
@@ -2025,7 +2201,16 @@ function buildNotaInner(t, isTampil) {
     </div>
   `).join('');
 
-  // Info Pembayaran (Desain Baru Berdasarkan Request)
+  // Row Diskon & Ongkir
+  let subtotalHtml = '';
+  if((t.diskon && t.diskon > 0) || (t.ongkir && t.ongkir > 0)) {
+      let sub = trxItems.reduce((sum, i) => sum + i.total, 0);
+      subtotalHtml += `<div class="n-row" style="color:var(--tx2);font-size:12px; margin-top:8px;"><span class="n-lbl">Subtotal</span><span class="n-val">${fmtRp(sub)}</span></div>`;
+      if(t.diskon > 0) subtotalHtml += `<div class="n-row" style="color:var(--red);font-size:12px"><span class="n-lbl">Diskon</span><span class="n-val">-${fmtRp(t.diskon)}</span></div>`;
+      if(t.ongkir > 0) subtotalHtml += `<div class="n-row" style="color:var(--tx2);font-size:12px"><span class="n-lbl">Ongkos Kirim</span><span class="n-val">+${fmtRp(t.ongkir)}</span></div>`;
+  }
+
+  // Info Pembayaran
   var paymentSection = '';
   if (t.sisa > 0 && !isTampil) {
      paymentSection = `
@@ -2066,8 +2251,11 @@ function buildNotaInner(t, isTampil) {
     ${t.alamat ? `<div class="n-row" style="align-items:flex-start; margin-top:-6px;"><span class="n-lbl">Alamat</span><span class="n-val" style="text-align:right; font-size:11px; color:var(--tx2); max-width:65%; line-height:1.4">${t.alamat}</span></div>` : ''}
     <div style="margin-top:12px; margin-bottom:8px; font-size:11px; font-weight:700; color:var(--tx3); text-transform:uppercase;">Daftar Pesanan:</div>
     ${itemRows}
+    
+    ${subtotalHtml}
+
     <div style="display:flex; justify-content:space-between; align-items:center; margin-top:12px; margin-bottom:4px;">
-      <span style="font-size:13px; color:var(--tx2);">Total Tagihan</span>
+      <span style="font-size:13px; color:var(--tx2);">Total Tagihan Akhir</span>
       <span style="font-size:15px; font-weight:700; font-family:var(--mono);color:var(--tx);">${fmtRp(t.total)}</span>
     </div>
     ${paymentSection}
@@ -2093,9 +2281,12 @@ function kirimWANota(){
   var deadlineText = isTampil ? `⏳ *Jadwal Pengambilan:* ${notaForWA.deadline}\n` : '';
   var alamatText = notaForWA.alamat ? `\n📍 *Alamat:* ${notaForWA.alamat}` : '';
   
-  // Format List Keranjang untuk Teks WA
-  var trxItems = notaForWA.items || [{kode: notaForWA.kode, barang: notaForWA.barang, qty: notaForWA.qty, harga: notaForWA.harga, total: notaForWA.total}];
+  var trxItems = notaForWA.items || [{kode: notaForWA.kode, barang: notaForWA.barang, qty: notaForWA.qty, harga: notaForWA.harga, total: (notaForWA.total + (notaForWA.diskon||0) - (notaForWA.ongkir||0))}];
   var itemTexts = trxItems.map(i => `▪️ *${i.barang}*\n   ${i.qty} x ${fmtRp(i.harga)} = ${fmtRp(i.total)}`).join('\n');
+
+  let ekstraBiaya = '';
+  if(notaForWA.diskon > 0) ekstraBiaya += `➖ *Diskon:* -${fmtRp(notaForWA.diskon)}\n`;
+  if(notaForWA.ongkir > 0) ekstraBiaya += `🛵 *Ongkir:* +${fmtRp(notaForWA.ongkir)}\n`;
 
   var msg = 
 `Halo *${notaForWA.pelanggan}*, berikut rincian pesanan Anda dari *ABUNAWAS PERCETAKAN & KONVEKSI*.
@@ -2106,8 +2297,8 @@ function kirimWANota(){
 
 📦 *DAFTAR PESANAN*
 ${itemTexts}
-
-💰 *TOTAL TAGIHAN: ${fmtRp(notaForWA.total)}*
+${ekstraBiaya}
+💰 *TOTAL TAGIHAN AKHIR: ${fmtRp(notaForWA.total)}*
 ${statusText}${deadlineText}
 📍 *Pengambilan barang di:*
 ABUNAWAS PERCETAKAN & KONVEKSI${alamatText}
