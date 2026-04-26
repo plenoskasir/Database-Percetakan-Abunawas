@@ -193,6 +193,28 @@ tr:hover td{background:#FAFBFC}
 <body>
 <div id="toast"></div>
 
+<!-- ═══════════════════════ KATALOG PUBLIK ═══════════════════════ -->
+<div id="pg-katalog" style="display:none; min-height:100vh; background:var(--bg); padding:24px 16px;">
+  <div style="max-width:800px; margin:0 auto;">
+    <button class="btn btn-ghost" onclick="closeKatalog()" style="margin-bottom:20px; background:var(--surf); box-shadow:var(--sh);">&larr; Kembali ke Login</button>
+    <div style="text-align:center; margin-bottom:32px;">
+      <div style="width:64px;height:64px;background:var(--blue);border-radius:16px;display:inline-flex;align-items:center;justify-content:center;box-shadow:0 8px 20px rgba(37,99,235,.25);margin-bottom:12px">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="white"><path d="M19 3H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V5a2 2 0 00-2-2zm-7 14H7v-2h5v2zm5-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+      </div>
+      <div style="font-size:28px; font-weight:800; color:var(--tx); letter-spacing:-0.5px;">Katalog Harga Percetakan</div>
+      <div style="font-size:14px; color:var(--tx2); margin-top:6px;">Daftar harga cetak & layanan kami. Harga dapat berubah sewaktu-waktu.</div>
+    </div>
+    
+    <div id="katalog-content">
+      <!-- Injeksi via JS -->
+    </div>
+    
+    <div style="text-align:center; margin-top:40px; padding:20px; color:var(--tx3); font-size:12px;">
+      &copy; Abunawas Percetakan & Konveksi
+    </div>
+  </div>
+</div>
+
 <!-- ═══════════════════════ LOGIN ═══════════════════════ -->
 <div id="pg-login">
   <div style="width:100%;max-width:440px">
@@ -218,7 +240,7 @@ tr:hover td{background:#FAFBFC}
       </div>
     </div>
     
-    <div style="background:var(--surf);border-radius:var(--rxl);border:1px solid var(--bdr);padding:20px;box-shadow:var(--sh)">
+    <div style="background:var(--surf);border-radius:var(--rxl);border:1px solid var(--bdr);padding:20px;box-shadow:var(--sh);margin-bottom:20px;">
       <div style="font-size:11px;font-weight:700;color:var(--tx3);text-align:center;margin-bottom:14px;letter-spacing:.6px;text-transform:uppercase">Shortcut Login</div>
       <div class="rc-grid">
         <div class="rc sel" onclick="pickRole('boss','1234',this)">
@@ -238,6 +260,14 @@ tr:hover td{background:#FAFBFC}
         </div>
       </div>
     </div>
+    
+    <!-- Tombol Katalog Publik -->
+    <div style="text-align:center;">
+      <button class="btn btn-ghost btn-full" style="border:1.5px dashed var(--blue); color:var(--blue); padding:12px; background:var(--blue-l);" onclick="showKatalog()">
+        📖 Lihat Katalog Harga Publik
+      </button>
+    </div>
+    
   </div>
 </div>
 
@@ -403,14 +433,14 @@ tr:hover td{background:#FAFBFC}
         </div>
       </div>
 
-      <!-- PIUTANG (UPDATE WARNING MERAH) -->
+      <!-- PIUTANG (WARNING MERAH) -->
       <div class="page" id="pg-piutang">
         <div class="ph"><div class="pt">Piutang Pelanggan</div><div class="ps">Warna merah menandakan sudah lewat jatuh tempo!</div></div>
         <div class="g3" style="margin-bottom:16px" id="piu-stats"></div>
         <div class="card"><div class="tbl-wrap" id="piu-tbl"></div></div>
       </div>
 
-      <!-- LACI KASIR (FITUR BARU) -->
+      <!-- LACI KASIR -->
       <div class="page" id="pg-laci">
         <div class="ph">
           <div><div class="pt">Setoran & Laci Kasir</div><div class="ps">Perhitungan uang fisik (CASH) di laci toko untuk hari ini.</div></div>
@@ -1199,6 +1229,57 @@ async function waReminderAI(wa, nama, sisaTagihan, deadline) {
   }
 }
 
+/* ════════════════ FUNGSI KATALOG PUBLIK ════════════════ */
+function showKatalog() {
+  document.getElementById('pg-login').style.display = 'none';
+  document.getElementById('pg-katalog').style.display = 'block';
+  renderKatalog();
+}
+
+function closeKatalog() {
+  document.getElementById('pg-katalog').style.display = 'none';
+  document.getElementById('pg-login').style.display = 'flex';
+}
+
+function renderKatalog() {
+  let wrap = document.getElementById('katalog-content');
+  if (BARANG.length === 0) {
+    wrap.innerHTML = '<div style="text-align:center; color:var(--tx3); padding:40px;">Data katalog masih kosong.</div>';
+    return;
+  }
+
+  // Group by category
+  let cats = {};
+  BARANG.forEach(b => {
+     if(!cats[b.kat]) cats[b.kat] = [];
+     cats[b.kat].push(b);
+  });
+
+  let html = '';
+  for (let c in cats) {
+    html += `<div style="font-size:16px; font-weight:800; color:var(--tx); margin-top:32px; margin-bottom:16px; border-bottom:2px solid var(--blue); padding-bottom:8px; display:inline-block;">${c}</div>`;
+    html += `<div class="g3">`; // Menggunakan grid 3 kolom
+    cats[c].forEach(b => {
+       let tierHtml = b.tiers.map((t, idx) => {
+          let prev = idx > 0 ? b.tiers[idx-1].max + 1 : 1;
+          let qtyLabel = t.max === 9999 ? (prev === 1 ? 'Harga Normal' : `≥ ${prev}`) : `${prev} - ${t.max}`;
+          return `<div style="display:flex; justify-content:space-between; font-size:12px; padding:6px 0; border-bottom:1px dashed var(--bdr);">
+                    <span style="color:var(--tx2)">Qty ${qtyLabel} ${b.satuan}</span>
+                    <span style="font-weight:700; color:var(--blue)">${fmtRp(t.h)}</span>
+                  </div>`;
+       }).join('');
+
+       html += `<div class="card" style="margin-bottom:0; box-shadow:0 4px 6px -1px rgba(0,0,0,.05);">
+         <div style="font-weight:800; font-size:15px; margin-bottom:4px; color:var(--tx);">${b.nama}</div>
+         <div style="font-size:11px; color:var(--tx3); font-family:var(--mono); margin-bottom:16px; padding-bottom:12px; border-bottom:1px solid var(--bdr);">Kode: ${b.kode}</div>
+         ${tierHtml}
+       </div>`;
+    });
+    html += `</div>`;
+  }
+  wrap.innerHTML = html;
+}
+
 /* ════════════════ LOGIKA LOGIN ════════════════ */
 function pickRole(u,p,el){
   document.querySelectorAll('.rc').forEach(function(r){r.classList.remove('sel');});
@@ -1717,7 +1798,31 @@ function simpanTrxPage(actionType = 'simpan'){
   }
 }
 
-/* ════════════════ TRANSAKSI (SEMUA) ════════════════ */
+/* ════════════════ TRANSAKSI (SEMUA) & FUNGSI HAPUS TRANSAKSI ════════════════ */
+function hapusTrx(id) {
+  if(!curUser || curUser.role !== 'boss') {
+      alert("Akses ditolak! Hanya akun Boss yang bisa menghapus transaksi.");
+      return;
+  }
+  if(confirm(`⚠️ YAKIN HAPUS PERMANEN TRANSAKSI ${id}?\n\nTindakan ini tidak bisa dibatalkan dan akan terhapus juga di data Excel!`)) {
+     let idx = TRX.findIndex(t => t.id === id);
+     if(idx >= 0) {
+         TRX.splice(idx, 1);
+         saveData(); // Save & Auto Sync
+         renderTrx();
+         
+         // Update halaman lain jika sedang dibuka
+         try { 
+            if(document.getElementById('pg-dashboard').classList.contains('on')) renderDash(); 
+            if(document.getElementById('pg-piutang').classList.contains('on')) renderPiutang(); 
+            if(document.getElementById('pg-kasir-riwayat').classList.contains('on')) renderKasirRiwayat(); 
+         } catch(e){}
+         
+         toast(`Transaksi ${id} berhasil dihapus permanen!`, 3000);
+     }
+  }
+}
+
 function renderTrx(){
   var q=(document.getElementById('trx-q')||{value:''}).value.toLowerCase();
   var f=(document.getElementById('trx-f')||{value:''}).value;
@@ -1729,6 +1834,9 @@ function renderTrx(){
   var rows=data.map(function(t){
     let trxItems = t.items || [{kode: t.kode, barang: t.barang, qty: t.qty, harga: t.harga, total: t.total, modal: t.modal}];
     let brgStr = trxItems.map(i => `<span style="font-size:12px">${i.barang} (x${i.qty})</span>`).join('<br>');
+    
+    // Tombol Hapus: Hanya dirender (dimunculkan ke HTML) jika yang login adalah BOSS
+    let delBtn = (curUser && curUser.role === 'boss') ? `<button class="btn btn-red btn-xs" onclick="hapusTrx('${t.id}')" style="margin-left:4px">Hapus</button>` : '';
 
     return '<tr>'+
       '<td class="mono">'+t.id+'<br><span style="font-size:10px;color:var(--tx3)">'+t.tgl+'</span></td>'+
@@ -1739,10 +1847,10 @@ function renderTrx(){
       '<td><select onchange="ubahOrder(\''+t.id+'\',this.value)" style="padding:4px 8px;border:1px solid var(--bdr);border-radius:6px;font-size:11px;font-family:var(--fn);outline:none;font-weight:600">'+
         ['Diproses','Dicetak','Selesai','Diambil'].map(function(s){return '<option'+(s===t.order?' selected':'')+'>'+s+'</option>';}).join('')+'</select></td>'+
       '<td>'+(t.sisa>0?'<button class="btn btn-green btn-xs" onclick="bukaPelunasan(\''+t.id+'\')">Pelunasan</button> ':'')+
-      '<button class="btn btn-ghost btn-xs" onclick="showNota(\''+t.id+'\')">Nota</button></td></tr>';
+      '<button class="btn btn-ghost btn-xs" onclick="showNota(\''+t.id+'\')">Nota</button>'+delBtn+'</td></tr>';
   }).join('');
   var el=document.getElementById('trx-tbl');
-  if(el) el.innerHTML='<table><thead><tr><th>ID / Tgl</th><th>Pelanggan</th><th>Detail Pesanan</th><th>Total Biaya</th><th>Bayar</th><th>Status Order</th><th>Aksi</th></tr></thead><tbody>'+rows+'</tbody></table>';
+  if(el) el.innerHTML='<table><thead><tr><th>ID / Tgl</th><th>Pelanggan</th><th>Detail Pesanan</th><th>Total Biaya</th><th>Bayar</th><th>Status Order</th><th>Aksi</th></tr></thead><tbody>'+(rows||'<tr><td colspan="7" style="text-align:center;padding:24px;color:var(--tx3)">Belum ada transaksi</td></tr>')+'</tbody></table>';
 }
 function ubahOrder(id,val){var t=TRX.find(function(x){return x.id===id;});if(t){t.order=val; saveData(); toast('Status produksi diupdate!');}}
 
@@ -2082,7 +2190,7 @@ function simpanUser(){
   var pw=document.getElementById('mu-pw').value.trim();
   var role=document.getElementById('mu-role').value;
   var wa=document.getElementById('mu-wa').value.trim();
-  if(!nama||!u||!pw){alert('Nama Lengkap, Username, dan Password wajib diisi!');return;}
+  if(!nama||!u||!pw){alert('Nama Lengkap, Username, Username, dan Password wajib diisi!');return;}
   var exist=USERS.findIndex(function(x){return x.u===u;});
   if(exist>=0){USERS[exist]={...USERS[exist],nama:nama,p:pw,role:role,wa:wa};toast('Data karyawan diupdate!');}
   else{USERS.push({u:u,p:pw,nama:nama,role:role,wa:wa,aktif:true});toast('Karyawan baru ditambahkan!');}
@@ -2371,6 +2479,13 @@ function backupCSV(){var h='ID,Tanggal,Pelanggan,WA,Alamat,Item_Pesanan,Total_Ha
 /* ════ INIT DEFAULT LOGIN SCREEN ════ */
 document.getElementById('inp-u').value='boss';
 document.getElementById('inp-p').value='1234';
+
+/* Cek URL untuk otomatis buka Katalog (misal: /?katalog=true) */
+window.onload = function() {
+    if (window.location.search.includes('katalog=true')) {
+        showKatalog();
+    }
+};
 </script>
 </body>
 </html>
