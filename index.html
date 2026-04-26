@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
-<title>Abunawas Percetakan</title>
+<title>Abunawas Percetakan & Konveksi</title>
 <!-- PWA Manifest & Pinned App Config -->
 <meta name="theme-color" content="#2563EB">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -198,10 +198,10 @@ tr:hover td{background:#FAFBFC}
   <div style="max-width:800px; margin:0 auto;">
     <button class="btn btn-ghost" onclick="closeKatalog()" style="margin-bottom:20px; background:var(--surf); box-shadow:var(--sh);">&larr; Kembali ke Login</button>
     <div style="text-align:center; margin-bottom:32px;">
-      <div style="width:64px;height:64px;background:var(--blue);border-radius:16px;display:inline-flex;align-items:center;justify-content:center;box-shadow:0 8px 20px rgba(37,99,235,.25);margin-bottom:12px">
-        <svg width="32" height="32" viewBox="0 0 24 24" fill="white"><path d="M19 3H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V5a2 2 0 00-2-2zm-7 14H7v-2h5v2zm5-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
-      </div>
-      <div style="font-size:28px; font-weight:800; color:var(--tx); letter-spacing:-0.5px;">Katalog Harga Percetakan</div>
+      
+      <img src="HARGA.jpg" alt="Logo Abunawas" style="max-width:100%; height:auto; max-height:140px; margin-bottom:12px; border-radius:8px;" onerror="this.style.display='none';">
+      
+      <div style="font-size:28px; font-weight:800; color:var(--tx); letter-spacing:-0.5px;">Katalog Harga Publik</div>
       <div style="font-size:14px; color:var(--tx2); margin-top:6px;">Daftar harga cetak & layanan kami. Harga dapat berubah sewaktu-waktu.</div>
     </div>
     
@@ -218,12 +218,22 @@ tr:hover td{background:#FAFBFC}
 <!-- ═══════════════════════ LOGIN ═══════════════════════ -->
 <div id="pg-login">
   <div style="width:100%;max-width:440px">
+    
+    <!-- HEADER LOGIN YANG BARU -->
     <div style="text-align:center;margin-bottom:28px">
-      <div style="width:76px;height:76px;background:var(--blue);border-radius:20px;display:inline-flex;align-items:center;justify-content:center;box-shadow:0 10px 30px rgba(37,99,235,.3);margin-bottom:16px">
-        <svg width="40" height="40" viewBox="0 0 24 24" fill="white"><path d="M19 3H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V5a2 2 0 00-2-2zm-7 14H7v-2h5v2zm5-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+      <!-- Gambar Logo akan diload otomatis dari HARGA.jpg -->
+      <img src="HARGA.jpg" alt="Abunawas Percetakan" style="max-width:100%; height:auto; max-height:120px; margin-bottom:12px; border-radius:8px;" onerror="this.style.display='none'; document.getElementById('fb-logo-text').style.display='block';">
+      
+      <!-- Fallback Jika Gambar HARGA.jpg Gagal Ter-load / Belum Di-upload -->
+      <div id="fb-logo-text" style="display:none;">
+          <div style="width:76px;height:76px;background:var(--blue);border-radius:20px;display:inline-flex;align-items:center;justify-content:center;box-shadow:0 10px 30px rgba(37,99,235,.3);margin-bottom:16px; margin-left:auto; margin-right:auto;">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="white"><path d="M19 3H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V5a2 2 0 00-2-2zm-7 14H7v-2h5v2zm5-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+          </div>
+          <div style="font-size:26px;font-weight:800;letter-spacing:-.5px">Abunawas</div>
+          <div style="font-size:16px;font-weight:700;">Percetakan & Konveksi</div>
       </div>
-      <div style="font-size:26px;font-weight:700;letter-spacing:-.5px">Abunawas Percetakan <span style="font-size:16px;">✨AI</span></div>
-      <div style="font-size:13px;color:var(--tx2);margin-top:4px">Web App Kasir & ERP Digital Printing</div>
+
+      <div style="font-size:13px;color:var(--tx2);margin-top:8px;font-weight:600;">Melayani Digital Printing <span style="color:var(--blue)">✨AI</span></div>
     </div>
     
     <div class="lcard">
@@ -277,7 +287,7 @@ tr:hover td{background:#FAFBFC}
     <div class="tbar-logo">
       <button class="btn-menu-mobile" onclick="toggleSidebar()"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
       <div class="tbar-mark"><svg viewBox="0 0 24 24"><path d="M19 3H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V5a2 2 0 00-2-2zm-7 14H7v-2h5v2zm5-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg></div>
-      <span>Abunawas Percetakan <span style="font-size:12px;margin-left:2px;color:var(--blue);">✨AI</span></span>
+      <span>Abunawas <span style="font-weight:normal; font-size:14px">Percetakan & Konveksi</span> <span style="font-size:12px;margin-left:2px;color:var(--blue);">✨AI</span></span>
     </div>
     <div class="tbar-sp"></div>
     <div class="upill">
@@ -476,7 +486,7 @@ tr:hover td{background:#FAFBFC}
       <!-- DATA PENGELUARAN & KULAKAN (RUANG KHUSUS BOSS) -->
       <div class="page" id="pg-pengeluaran">
         <div class="ph">
-          <div><div class="pt">Input Belanja & Pengeluaran (Kulakan)</div><div class="ps">Catat pembelian bahan baku, bayar makelar cetak, dan biaya operasional.</div></div>
+          <div><div class="pt">Input Belanja & Pengeluaran</div><div class="ps">Catat pembelian bahan baku, bayar makelar cetak, dan biaya operasional.</div></div>
         </div>
 
         <div class="card ai-card" style="margin-bottom:16px;">
@@ -595,11 +605,11 @@ tr:hover td{background:#FAFBFC}
                <div class="field"><label>Link Gambar QRIS (Bisa pakai link Google Drive / Link GitHub)</label>
                    <input type="text" id="set-qris-img" placeholder="Paste link di sini...">
                    <div style="font-size:10px; color:var(--tx3); margin-top:4px; line-height:1.4;">
-                       <b>Sangat disarankan:</b> Upload foto ke Github Anda (qris.jpg), lalu masukkan linknya ke sini agar gambar tidak pernah diblokir saat cetak PDF.
+                       <b>Sangat disarankan:</b> Upload foto ke Github Anda (qris.png), lalu masukkan linknya ke sini agar gambar tidak pernah diblokir saat cetak PDF.
                    </div>
                </div>
                <div class="field"><label>Link Teks QRIS (Untuk di WA)</label>
-                   <input type="text" id="set-qris-link" placeholder="Misal: https://s.id/BayarQRIS">
+                   <input type="text" id="set-qris-link" placeholder="Misal: https://plenoskasir.github.io/Database-Percetakan-Abunawas/qris.png">
                </div>
                <button class="btn btn-blue btn-full" onclick="simpanSetting()" style="margin-top:10px;">💾 Simpan Pengaturan</button>
             </div>
@@ -827,8 +837,8 @@ var TOKO = JSON.parse(localStorage.getItem('abunawas_toko')) || {
   bank2: 'BRI: 19382992013213',
   an: 'a.n ABUNAWAS PERCETAKAN',
   ongkirKm: 2000,
-  qrisImg: 'https://plenoskasir.github.io/Database-Percetakan-Abunawas/qris.jpg',
-  qrisLink: 'https://bit.ly/Bayar-Abunawas'
+  qrisImg: 'qris.png',
+  qrisLink: 'https://plenoskasir.github.io/Database-Percetakan-Abunawas/qris.png'
 };
 
 var PELANGGAN = JSON.parse(localStorage.getItem('abunawas_pel')) || [
@@ -1925,16 +1935,45 @@ function waReminder(wa,nama,sisa){
 }
 
 /* ════════════════ INPUT BELANJA & PENGELUARAN BOSS ════════════════ */
+function hapusPengeluaran(id) {
+  if(!curUser || curUser.role !== 'boss') {
+      alert("Akses ditolak! Hanya akun Boss yang bisa menghapus data pengeluaran.");
+      return;
+  }
+  if(confirm(`⚠️ YAKIN HAPUS DATA PENGELUARAN ${id}?\n\nData yang dihapus akan memengaruhi laporan laba dan laci kasir.`)) {
+     let idx = PENGELUARAN.findIndex(p => p.id === id);
+     if(idx >= 0) {
+         PENGELUARAN.splice(idx, 1);
+         saveData(); 
+         renderPengeluaran();
+         
+         // Update UI lainnya yang berkaitan
+         try {
+            if(document.getElementById('pg-hutang-pengeluaran').classList.contains('on')) renderHutangPengeluaran();
+            if(document.getElementById('pg-hutang-vendor').classList.contains('on')) renderHutangVendor();
+            if(document.getElementById('pg-laci').classList.contains('on')) renderLaci();
+            if(document.getElementById('pg-dashboard').classList.contains('on')) renderDash();
+         } catch(e){}
+         
+         toast(`Pengeluaran ${id} berhasil dihapus!`, 3000);
+     }
+  }
+}
+
 function renderPengeluaran(){
   var rows=PENGELUARAN.map(function(v,i){
     let ketExtra = v.vendor ? `<br><span style="font-size:10px;color:var(--tx3)">Vendor: ${v.vendor}</span>` : '';
     let isHutang = v.status === 'Hutang';
+    
+    // Tombol Hapus: Hanya untuk BOSS
+    let delBtn = (curUser && curUser.role === 'boss') ? `<button class="btn btn-red btn-xs" onclick="hapusPengeluaran('${v.id}')" style="margin-left:4px">Hapus</button>` : '';
+
     return '<tr><td class="mono">'+v.id+'<br><span style="font-size:10px;color:var(--tx3)">'+v.tgl+'</span></td>'+
       '<td style="font-weight:600">'+v.ket+ketExtra+'</td>'+
       '<td><span class="badge bg-gray">'+v.kategori+'</span></td>'+
       '<td style="font-weight:700;color:var(--amber)">'+fmtRp(v.total)+'</td>'+
       '<td>'+badgeBayar(v.status.includes('Lunas')?'Lunas':'Hutang')+'</td>'+
-      '<td>'+(isHutang?'<button class="btn btn-green btn-xs" onclick="lunasPengeluaran('+i+')">Tandai Lunas</button>':'')+'</td></tr>';
+      '<td>'+(isHutang?'<button class="btn btn-green btn-xs" onclick="lunasPengeluaran('+i+')">Tandai Lunas</button>':'')+delBtn+'</td></tr>';
   }).join('');
   document.getElementById('pengeluaran-tbl').innerHTML='<table><thead><tr><th>ID / Tgl</th><th>Keterangan Belanja / Tagihan</th><th>Kategori</th><th>Total Nominal</th><th>Status</th><th>Aksi</th></tr></thead><tbody>'+(rows||'<tr><td colspan="6" style="text-align:center">Data kosong.</td></tr>')+'</tbody></table>';
 }
@@ -2244,7 +2283,7 @@ async function bagikanGambarNota() {
           await navigator.share({
             files: [file],
             title: 'Nota Pesanan',
-            text: 'Berikut adalah nota pesanan Anda dari Abunawas Percetakan.'
+            text: 'Berikut adalah nota pesanan Anda dari Abunawas Percetakan & Konveksi.'
           });
           return; 
         } catch (e) {
@@ -2349,8 +2388,12 @@ function buildNotaInner(t, isTampil) {
   
   return `
     <div style="text-align:center; margin-bottom:18px;">
-      <div style="font-size:20px; font-weight:700; color:var(--tx); letter-spacing:-0.5px;">ABUNAWAS PERCETAKAN & KONVEKSI</div>
-      <div style="font-size:11px; color:var(--tx3); font-weight:700; margin-top:4px;">${docTitle}</div>
+      <!-- Opsional Logo di Nota -->
+      <img src="HARGA.jpg" style="max-width:180px; margin-bottom:8px;" alt="" onerror="this.style.display='none'">
+      <div style="font-size:22px; font-weight:800; color:var(--tx); letter-spacing:-0.5px; line-height:1.2;">ABUNAWAS</div>
+      <div style="font-size:14px; font-weight:700; color:var(--tx);">Percetakan & Konveksi</div>
+      <div style="font-size:11px; color:var(--tx2); margin-bottom:6px;">Melayani Digital Printing</div>
+      <div style="font-size:11px; color:var(--tx3); font-weight:700; margin-top:8px; padding-top:8px; border-top:1px dashed var(--bdr); display:inline-block; padding-left:16px; padding-right:16px;">${docTitle}</div>
     </div>
     <hr class="n-dash">
     <div class="n-row"><span class="n-lbl">ID Nota</span><span class="n-val" style="font-family:var(--mono); color:var(--tx2); font-size:11px;">${t.id}</span></div>
@@ -2397,7 +2440,7 @@ function kirimWANota(){
   if(notaForWA.ongkir > 0) ekstraBiaya += `🛵 *Ongkir:* +${fmtRp(notaForWA.ongkir)}\n`;
 
   var msg = 
-`Halo *${notaForWA.pelanggan}*, berikut rincian pesanan Anda dari *ABUNAWAS PERCETAKAN & KONVEKSI*.
+`Halo *${notaForWA.pelanggan}*, berikut rincian pesanan Anda dari *ABUNAWAS (Percetakan & Konveksi)*.
 
 📄 ${docTitle}
 🧾 *ID Nota:* ${notaForWA.id}
@@ -2409,7 +2452,7 @@ ${ekstraBiaya}
 💰 *TOTAL TAGIHAN AKHIR: ${fmtRp(notaForWA.total)}*
 ${statusText}${deadlineText}
 📍 *Pengambilan barang di:*
-ABUNAWAS PERCETAKAN & KONVEKSI${alamatText}
+Abunawas Percetakan & Konveksi${alamatText}
 (Kasir: ${notaForWA.kasir})
 
 *NOTED :*
