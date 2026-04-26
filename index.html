@@ -4,21 +4,15 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
 <title>Abunawas Percetakan</title>
-<!-- PWA Manifest & Pinned App Config -->
 <meta name="theme-color" content="#2563EB">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="manifest" href='data:application/manifest+json,{"name":"Abunawas Percetakan","short_name":"Abunawas","display":"standalone","background_color":"#F7F8FA","theme_color":"#2563EB","icons":[{"src":"https://cdn-icons-png.flaticon.com/512/3063/3063822.png","sizes":"512x512","type":"image/png"}]}'>
 
-<!-- Google Fonts -->
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<!-- Chart.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
-<!-- QRCode.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-<!-- html2pdf.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-<!-- html2canvas untuk Fitur Share Gambar Nota -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
 <style>
@@ -185,15 +179,6 @@ tr:hover td{background:#FAFBFC}
   .hide-on-print { display: none !important; }
 }
 
-/* Animasi Pulse & Stamp Lunas */
-@keyframes pulseGlow {
-  0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
-  70% { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
-}
-.btn-cek-lunas { animation: pulseGlow 2s infinite; }
-.stamp-lunas { border: 2px solid var(--green); color: var(--green); padding: 4px 12px; border-radius: 8px; font-weight: 800; font-size: 14px; transform: rotate(-5deg); display: inline-block; letter-spacing: 1px; }
-
 /* Keranjang List */
 .cart-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid var(--bdr); }
 .cart-item:last-child { border-bottom: none; }
@@ -202,7 +187,6 @@ tr:hover td{background:#FAFBFC}
 <body>
 <div id="toast"></div>
 
-<!-- ═══════════════════════ LOGIN ═══════════════════════ -->
 <div id="pg-login">
   <div style="width:100%;max-width:440px">
     <div style="text-align:center;margin-bottom:28px">
@@ -250,7 +234,6 @@ tr:hover td{background:#FAFBFC}
   </div>
 </div>
 
-<!-- ═══════════════════════ MAIN APP SHELL ═══════════════════════ -->
 <div id="pg-app">
   <div class="topbar">
     <div class="tbar-logo">
@@ -272,7 +255,6 @@ tr:hover td{background:#FAFBFC}
     
     <div class="main">
       
-      <!-- DASHBOARD (BOSS) -->
       <div class="page" id="pg-dashboard">
         <div class="ph">
           <div><div class="pt">Dashboard</div><div class="ps" id="d-date"></div></div>
@@ -301,7 +283,6 @@ tr:hover td{background:#FAFBFC}
         <div class="card"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px"><div class="card-t" style="margin:0">Transaksi Terbaru</div></div><div class="tbl-wrap" id="d-trx"></div></div>
       </div>
 
-      <!-- INPUT TRANSAKSI (SEMUA ROLE) -->
       <div class="page" id="pg-input">
         <div class="ph">
           <div><div class="pt">Input Transaksi Kasir</div><div class="ps">Tambah pesanan ke keranjang lalu buat invoice tagihan</div></div>
@@ -392,7 +373,6 @@ tr:hover td{background:#FAFBFC}
         </div>
       </div>
 
-      <!-- TRANSAKSI -->
       <div class="page" id="pg-transaksi">
         <div class="ph"><div class="pt">Semua Transaksi</div><button class="btn btn-blue" onclick="showPage('input')">+ Transaksi Baru</button></div>
         <div class="card">
@@ -404,14 +384,12 @@ tr:hover td{background:#FAFBFC}
         </div>
       </div>
 
-      <!-- PIUTANG -->
       <div class="page" id="pg-piutang">
         <div class="ph"><div class="pt">Piutang Pelanggan</div></div>
         <div class="g3" style="margin-bottom:16px" id="piu-stats"></div>
         <div class="card"><div class="tbl-wrap" id="piu-tbl"></div></div>
       </div>
 
-      <!-- DATA PENGELUARAN & KULAKAN (RUANG KHUSUS BOSS) -->
       <div class="page" id="pg-pengeluaran">
         <div class="ph">
           <div><div class="pt">Input Belanja & Pengeluaran (Kulakan)</div><div class="ps">Catat pembelian bahan baku, bayar makelar cetak, dan biaya operasional.</div></div>
@@ -454,21 +432,18 @@ tr:hover td{background:#FAFBFC}
         <div class="card"><div class="card-t">Riwayat Belanja & Pengeluaran</div><div class="tbl-wrap" id="pengeluaran-tbl"></div></div>
       </div>
 
-      <!-- HUTANG VENDOR / MAKELAR -->
       <div class="page" id="pg-hutang-vendor">
         <div class="ph"><div class="pt">Hutang ke Vendor / Makelar</div><div class="ps">Daftar tagihan modal / bahan yang belum Anda bayarkan ke Vendor.</div></div>
         <div class="g3" style="margin-bottom:16px" id="hv-stats"></div>
         <div class="card"><div class="tbl-wrap" id="hv-tbl"></div></div>
       </div>
 
-      <!-- HUTANG PENGELUARAN -->
       <div class="page" id="pg-hutang-pengeluaran">
         <div class="ph"><div class="pt">Hutang Tagihan Operasional</div></div>
         <div class="g3" style="margin-bottom:16px" id="hp-stats"></div>
         <div class="card"><div class="tbl-wrap" id="hp-tbl"></div></div>
       </div>
 
-      <!-- DATA PELANGGAN -->
       <div class="page" id="pg-pelanggan">
         <div class="ph">
           <div><div class="pt">Data Master Pelanggan</div><div class="ps">Database kontak customer Anda untuk Auto-fill WhatsApp</div></div>
@@ -477,7 +452,6 @@ tr:hover td{background:#FAFBFC}
         <div class="card"><div class="tbl-wrap" id="pel-tbl"></div></div>
       </div>
 
-      <!-- DATA VENDOR -->
       <div class="page" id="pg-vendor">
         <div class="ph">
           <div><div class="pt">Data Master Vendor</div><div class="ps">Daftar tempat Anda kulakan bahan / cetakan luar</div></div>
@@ -486,7 +460,6 @@ tr:hover td{background:#FAFBFC}
         <div class="card"><div class="tbl-wrap" id="vnd-tbl"></div></div>
       </div>
 
-      <!-- BARANG -->
       <div class="page" id="pg-barang">
         <div class="ph">
           <div><div class="pt">Data Barang & Harga</div><div class="ps">Sistem harga bertingkat otomatis (Tiered Pricing)</div></div>
@@ -499,7 +472,6 @@ tr:hover td{background:#FAFBFC}
         <div class="card"><div class="tbl-wrap" id="brg-tbl"></div></div>
       </div>
 
-      <!-- LAPORAN -->
       <div class="page" id="pg-laporan">
         <div class="ph"><div class="pt">Laporan Lengkap</div></div>
         <div class="g3" style="margin-bottom:16px" id="lap-stats"></div>
@@ -507,14 +479,12 @@ tr:hover td{background:#FAFBFC}
         <div class="card" style="margin-top:0"><div class="card-t">Performa Karyawan (Berdasarkan Omzet)</div><div class="tbl-wrap" id="lap-kar"></div></div>
       </div>
 
-      <!-- DASHBOARD ADMIN -->
       <div class="page" id="pg-dash-admin">
         <div class="ph"><div class="pt">Dashboard Operasional</div></div>
         <div class="g2" style="margin-bottom:16px" id="da-stats"></div>
         <div class="card"><div class="card-t">Transaksi Hari Ini</div><div class="tbl-wrap" id="da-trx"></div></div>
       </div>
 
-      <!-- PENGATURAN TOKO (REKENING & QRIS) -->
       <div class="page" id="pg-setting">
         <div class="ph"><div class="pt">Pengaturan Toko</div><div class="ps">Ubah nomor rekening dan link gambar QRIS langsung dari sini.</div></div>
         
@@ -528,10 +498,10 @@ tr:hover td{background:#FAFBFC}
             
             <div class="card">
                <div class="card-t">Pengaturan QRIS</div>
-               <div class="field"><label>Link Gambar QRIS (Bisa pakai link Google Drive)</label>
-                   <input type="text" id="set-qris-img" placeholder="Paste link Google Drive di sini...">
+               <div class="field"><label>Link Gambar QRIS (Bisa pakai link Google Drive / Link GitHub)</label>
+                   <input type="text" id="set-qris-img" placeholder="Paste link di sini...">
                    <div style="font-size:10px; color:var(--tx3); margin-top:4px; line-height:1.4;">
-                       <b>Cara pakai Google Drive:</b> Upload foto QRIS ke GDrive > Klik Kanan > Share > Pastikan "Anyone with the link" > Copy Link > Paste di sini. Sistem akan otomatis mengubahnya jadi gambar.
+                       <b>Sangat disarankan:</b> Upload foto ke Github Anda (qris.jpg atau qris.png), lalu masukkan linknya ke sini agar gambar tidak pernah diblokir saat cetak PDF.
                    </div>
                </div>
                <div class="field"><label>Link Teks QRIS (Untuk di WA)</label>
@@ -542,13 +512,11 @@ tr:hover td{background:#FAFBFC}
         </div>
       </div>
 
-      <!-- USER -->
       <div class="page" id="pg-user">
         <div class="ph"><div class="pt">Manajemen Karyawan / User</div><button class="btn btn-blue" onclick="openModalUser()">+ Tambah User</button></div>
         <div class="card"><div class="tbl-wrap" id="user-tbl"></div></div>
       </div>
 
-      <!-- BACKUP -->
       <div class="page" id="pg-backup">
         <div class="ph"><div class="pt">Backup & Integrasi Google Sheets</div></div>
         <div class="g2" style="align-items:start">
@@ -570,20 +538,13 @@ tr:hover td{background:#FAFBFC}
         </div>
       </div>
 
-      <!-- KASIR RIWAYAT KHUSUS KASIR -->
       <div class="page" id="pg-kasir-riwayat">
         <div class="ph"><div class="pt">Riwayat Transaksi Saya</div><div class="ps">Semua nota yang telah Anda buat</div></div>
         <div class="card"><div class="tbl-wrap" id="kasir-riwayat-tbl"></div></div>
       </div>
 
-    </div><!-- /main -->
-  </div>
-</div><!-- /pg-app -->
-
-
-<!-- ═══════════════════════ MODALS ═══════════════════════ -->
-
-<div class="modal-bg" id="mo-barang">
+    </div></div>
+</div><div class="modal-bg" id="mo-barang">
   <div class="modal">
     <div class="modal-t" id="mo-barang-title">Tambah Barang</div>
     <div class="g2">
@@ -659,7 +620,6 @@ tr:hover td{background:#FAFBFC}
   </div>
 </div>
 
-<!-- Modal Pilih Metode Pelunasan -->
 <div class="modal-bg" id="mo-pelunasan">
   <div class="modal" style="max-width:320px;">
     <div class="modal-t" style="text-align:center;">Konfirmasi Pelunasan ✔️</div>
@@ -680,21 +640,18 @@ tr:hover td{background:#FAFBFC}
   </div>
 </div>
 
-<!-- Modal Nota (Siap Print & PDF) -->
 <div class="modal-bg" id="mo-nota">
   <div class="modal" style="max-width:440px; background:var(--surf2); padding:20px;">
     
-    <!-- Kotak Centang Pengaturan Status & Jadwal Ambil -->
     <div class="hide-on-print" data-html2canvas-ignore="true" style="margin-bottom: 12px; background: var(--amber-l); border: 1px solid var(--amber); padding: 10px; border-radius: 8px;">
       <label style="cursor: pointer; display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 600; color: var(--amber-d);">
         <input type="checkbox" id="cb-tampil-status" onchange="refreshNotaView()" style="width: 16px; height: 16px; accent-color: var(--amber-d);"> 
-        Tampilkan Status Pembayaran & Jadwal Pengambilan
+        Tampilkan Jadwal Pengambilan
       </label>
     </div>
 
     <div id="nota-preview-card">
-      <!-- Injeksi HTML via JS -->
-    </div>
+      </div>
     
     <div class="nota-acts" style="display:flex; gap:8px; flex-wrap:wrap; margin-top:0;">
       <button class="btn btn-ghost" style="flex:1; min-width:60px; border:1px solid var(--bdr);" onclick="closeModal('mo-nota')">Tutup</button>
@@ -706,7 +663,6 @@ tr:hover td{background:#FAFBFC}
   </div>
 </div>
 
-<!-- Modal Konfirmasi Sheets -->
 <div class="modal-bg" id="mo-sheets-confirm">
   <div class="modal" style="max-width:340px; text-align:center;">
     <div style="font-size:32px; margin-bottom:12px;">☁️</div>
@@ -762,7 +718,7 @@ var TOKO = JSON.parse(localStorage.getItem('abunawas_toko')) || {
   bank1: 'BCA: 73827328327',
   bank2: 'BRI: 19382992013213',
   an: 'a.n ABUNAWAS PERCETAKAN',
-  qrisImg: 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=Silakan+Scan+QRIS+Ini',
+  qrisImg: 'https://plenoskasir.github.io/Database-Percetakan-Abunawas/qris.jpg',
   qrisLink: 'https://bit.ly/Bayar-Abunawas'
 };
 
@@ -2025,7 +1981,8 @@ function showNota(id){
       cb.checked = (t.bayar === 'Lunas' || t.bayar === 'DP');
   }
   
-  refreshNotaView();Modal('mo-nota');
+  refreshNotaView();
+  openModal('mo-nota');
 }
 
 function refreshNotaView() {
@@ -2039,14 +1996,10 @@ function refreshNotaView() {
 }
 
 function buildNotaInner(t, isTampil) {
-  var bo = t.order === 'Selesai' ? 'color:#1D4ED8;background:#DBEAFE' : 'color:#92400E;background:#FEF3C7';
-  var kasirObj = USERS.find(function(u){ return u.nama === t.kasir; });
-  var kasirWa = kasirObj ? kasirObj.wa : '-';
-
-  var docTitle = isTampil ? (t.bayar === 'Lunas' ? 'BUKTI PENGAMBILAN BARANG / LUNAS' : (t.bayar === 'DP' ? 'BUKTI PENGAMBILAN BARANG / DP' : 'INVOICE TRANSAKSI')) : 'INVOICE / TAGIHAN PESANAN';
+  var docTitle = isTampil ? 'BUKTI PENGAMBILAN BARANG' : 'INVOICE / TAGIHAN PESANAN';
 
   // Render Items (Keranjang)
-  var trxItems = t.items || [{kode: t.kode, barang: t.barang, qty: t.qty, harga: t.harga, total: t.total, modal: t.modal}];
+  var trxItems = t.items || [{kode: t.kode, barang: t.barang, qty: t.qty, harga: t.harga, total: t.total}];
   var itemRows = trxItems.map(i => `
     <div style="display:flex; justify-content:space-between; align-items:flex-start; padding:6px 0; font-size:13px; border-bottom:1px dashed #F3F4F6;">
        <div style="flex:1;">
@@ -2062,73 +2015,26 @@ function buildNotaInner(t, isTampil) {
   if (t.sisa > 0 && !isTampil) {
      paymentSection = `
        <div style="margin-top:16px; padding:16px; border-top:1.5px dashed var(--bdr); background:var(--surf2); border-radius:12px;">
-         
          <div style="display:flex; align-items:center; gap:8px; font-size:12px; font-weight:800; color:var(--tx); margin-bottom:12px;">
            <div style="width:3px; height:14px; background:var(--tx); border-radius:2px;"></div>
            METODE PEMBAYARAN
          </div>
-         
          <div style="background:var(--surf); border:1px solid var(--bdr); padding:12px; border-radius:8px; margin-bottom:8px; text-align:left; font-size:12px; color:var(--tx2);">
            <strong style="color:var(--tx); font-size:13px;">${TOKO.bank1}</strong> <br> ${TOKO.an}
          </div>
-         
          <div style="background:var(--surf); border:1px solid var(--bdr); padding:12px; border-radius:8px; margin-bottom:12px; text-align:left; font-size:12px; color:var(--tx2);">
            <strong style="color:var(--tx); font-size:13px;">${TOKO.bank2}</strong> <br> ${TOKO.an}
          </div>
-         
          <div style="background:var(--surf); border:1px solid var(--bdr); padding:20px; border-radius:8px; text-align:center; margin-bottom:12px;">
            <img src="${TOKO.qrisImg}" style="width:180px; height:180px; object-fit:contain; margin-bottom:10px; border-radius:4px;" alt="QRIS">
            <div style="font-size:13px; font-weight:700; color:var(--tx);">Scan QRIS untuk pembayaran</div>
            <div style="font-size:11px; color:var(--tx3); margin-top:2px;">Masukkan nominal sesuai tagihan</div>
          </div>
-         
          <div style="text-align:center; font-size:15px; font-weight:800; color:var(--red); background:var(--red-l); padding:12px; border-radius:8px; border:1.5px dashed var(--red);">
            SISA TAGIHAN: ${fmtRp(t.sisa)}
          </div>
-         
        </div>
      `;
-  }
-  
-  var statusHtml = '';
-  if(isTampil) {
-      if(t.bayar === 'Lunas') {
-          statusHtml += `
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; margin-top:8px;">
-              <span style="font-size:13px; color:var(--tx2);">Status</span>
-              <span class="stamp-lunas">LUNAS ✔️ (${t.metode || 'Cash'})</span>
-            </div>
-          `;
-      } else if (t.bayar === 'DP') {
-          statusHtml += `
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
-              <span style="font-size:13px; color:var(--tx2);">Uang Titipan</span>
-              <span style="font-size:15px; font-weight:700; font-family:var(--mono);color:var(--amber-d);">${fmtRp(t.dibayar)}</span>
-            </div>
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-              <span style="font-size:13px; color:var(--tx2); font-weight:700;">Sisa Tagihan</span>
-              <span style="font-size:15px; font-weight:700; font-family:var(--mono);color:var(--red);">${fmtRp(t.sisa)}</span>
-            </div>
-            <div style="display:flex; gap:8px; margin-bottom:16px; margin-top:12px;">
-              <span style="padding:4px 10px; border-radius:99px; font-size:10px; font-weight:700; display:flex; align-items:center; gap:4px; color:#92400E;background:#FEF3C7">
-                <span style="width:5px; height:5px; border-radius:50%; background:currentColor;"></span> Titip Uang (DP)
-              </span>
-              <span style="padding:4px 10px; border-radius:99px; font-size:10px; font-weight:700; ${bo}">${t.order}</span>
-            </div>
-          `;
-      } else {
-          statusHtml += `
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-              <span style="font-size:13px; color:var(--tx2); font-weight:700;">Sisa Tagihan</span>
-              <span style="font-size:15px; font-weight:700; font-family:var(--mono);color:var(--red);">${fmtRp(t.sisa)}</span>
-            </div>
-            <div style="display:flex; gap:8px; margin-bottom:16px; margin-top:12px;">
-              <span style="padding:4px 10px; border-radius:99px; font-size:10px; font-weight:700; display:flex; align-items:center; gap:4px; color:#991B1B;background:#FEE2E2">
-                <span style="width:5px; height:5px; border-radius:50%; background:currentColor;"></span> Belum Lunas
-              </span>
-            </div>
-          `;
-      }
   }
 
   var deadlineHtml = isTampil ? `<br>Jadwal Ambil: <strong style="color:var(--blue)">${t.deadline}</strong>` : '';
@@ -2138,113 +2044,23 @@ function buildNotaInner(t, isTampil) {
       <div style="font-size:20px; font-weight:700; color:var(--tx); letter-spacing:-0.5px;">ABUNAWAS PERCETAKAN & KONVEKSI</div>
       <div style="font-size:11px; color:var(--tx3); font-weight:700; margin-top:4px;">${docTitle}</div>
     </div>
-    
     <hr class="n-dash">
-    
     <div class="n-row"><span class="n-lbl">ID Nota</span><span class="n-val" style="font-family:var(--mono); color:var(--tx2); font-size:11px;">${t.id}</span></div>
     <div class="n-row"><span class="n-lbl">Tanggal</span><span class="n-val">${t.tgl}</span></div>
     <div class="n-row" style="align-items:flex-start;"><span class="n-lbl">Pelanggan</span><span class="n-val" style="text-align:right">${t.pelanggan}${t.wa ? `<br><span style="font-size:10px;color:var(--tx3);font-family:var(--mono)">${t.wa}</span>` : ''}</span></div>
     ${t.alamat ? `<div class="n-row" style="align-items:flex-start; margin-top:-6px;"><span class="n-lbl">Alamat</span><span class="n-val" style="text-align:right; font-size:11px; color:var(--tx2); max-width:65%; line-height:1.4">${t.alamat}</span></div>` : ''}
-    
     <div style="margin-top:12px; margin-bottom:8px; font-size:11px; font-weight:700; color:var(--tx3); text-transform:uppercase;">Daftar Pesanan:</div>
     ${itemRows}
-    
     <div style="display:flex; justify-content:space-between; align-items:center; margin-top:12px; margin-bottom:4px;">
       <span style="font-size:13px; color:var(--tx2);">Total Tagihan</span>
       <span style="font-size:15px; font-weight:700; font-family:var(--mono);color:var(--tx);">${fmtRp(t.total)}</span>
     </div>
-    
-    ${statusHtml}
-
     ${paymentSection}
-    
     <div style="font-size:10px; color:var(--tx2); text-align:left; margin-bottom:16px; margin-top:16px; background:var(--surf2); padding:10px; border-radius:8px; line-height:1.5;">
       <strong>NOTED:</strong><br>
       - Hasil warna cetakan tidak bisa 100% sama dengan warna layar.<br>
       - Barang tidak diambil lebih dari 7 hari dianggap hilang.
     </div>
-
-    <div style="font-size:11px; color:var(--tx3); text-align:center; margin-bottom:16px; line-height:1.6">
-      Kasir: <strong style="color:var(--tx2)">${t.kasir}</strong> ${deadlineHtml}
-    </div>
-  `;
-}
-  open
-  
-  var statusHtml = '';
-  if(isTampil) {
-      if(t.bayar === 'Lunas') {
-          statusHtml += `
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; margin-top:8px;">
-              <span style="font-size:13px; color:var(--tx2);">Status</span>
-              <span class="stamp-lunas">LUNAS ✔️ (${t.metode || 'Cash'})</span>
-            </div>
-          `;
-      } else if (t.bayar === 'DP') {
-          statusHtml += `
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
-              <span style="font-size:13px; color:var(--tx2);">Uang Titipan</span>
-              <span style="font-size:15px; font-weight:700; font-family:var(--mono);color:var(--amber-d);">${fmtRp(t.dibayar)}</span>
-            </div>
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-              <span style="font-size:13px; color:var(--tx2); font-weight:700;">Sisa Tagihan</span>
-              <span style="font-size:15px; font-weight:700; font-family:var(--mono);color:var(--red);">${fmtRp(t.sisa)}</span>
-            </div>
-            <div style="display:flex; gap:8px; margin-bottom:16px; margin-top:12px;">
-              <span style="padding:4px 10px; border-radius:99px; font-size:10px; font-weight:700; display:flex; align-items:center; gap:4px; color:#92400E;background:#FEF3C7">
-                <span style="width:5px; height:5px; border-radius:50%; background:currentColor;"></span> Titip Uang (DP)
-              </span>
-              <span style="padding:4px 10px; border-radius:99px; font-size:10px; font-weight:700; ${bo}">${t.order}</span>
-            </div>
-          `;
-      } else {
-          statusHtml += `
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-              <span style="font-size:13px; color:var(--tx2); font-weight:700;">Sisa Tagihan</span>
-              <span style="font-size:15px; font-weight:700; font-family:var(--mono);color:var(--red);">${fmtRp(t.sisa)}</span>
-            </div>
-            <div style="display:flex; gap:8px; margin-bottom:16px; margin-top:12px;">
-              <span style="padding:4px 10px; border-radius:99px; font-size:10px; font-weight:700; display:flex; align-items:center; gap:4px; color:#991B1B;background:#FEE2E2">
-                <span style="width:5px; height:5px; border-radius:50%; background:currentColor;"></span> Belum Lunas
-              </span>
-            </div>
-          `;
-      }
-  }
-
-  var deadlineHtml = isTampil ? `<br>Jadwal Ambil: <strong style="color:var(--blue)">${t.deadline}</strong>` : '';
-  
-  return `
-    <div style="text-align:center; margin-bottom:18px;">
-      <div style="font-size:20px; font-weight:700; color:var(--tx); letter-spacing:-0.5px;">ABUNAWAS PERCETAKAN & KONVEKSI</div>
-      <div style="font-size:11px; color:var(--tx3); font-weight:700; margin-top:4px;">${docTitle}</div>
-    </div>
-    
-    <hr class="n-dash">
-    
-    <div class="n-row"><span class="n-lbl">ID Nota</span><span class="n-val" style="font-family:var(--mono); color:var(--tx2); font-size:11px;">${t.id}</span></div>
-    <div class="n-row"><span class="n-lbl">Tanggal</span><span class="n-val">${t.tgl}</span></div>
-    <div class="n-row" style="align-items:flex-start;"><span class="n-lbl">Pelanggan</span><span class="n-val" style="text-align:right">${t.pelanggan}${t.wa ? `<br><span style="font-size:10px;color:var(--tx3);font-family:var(--mono)">${t.wa}</span>` : ''}</span></div>
-    ${t.alamat ? `<div class="n-row" style="align-items:flex-start; margin-top:-6px;"><span class="n-lbl">Alamat</span><span class="n-val" style="text-align:right; font-size:11px; color:var(--tx2); max-width:65%; line-height:1.4">${t.alamat}</span></div>` : ''}
-    
-    <div style="margin-top:12px; margin-bottom:8px; font-size:11px; font-weight:700; color:var(--tx3); text-transform:uppercase;">Daftar Pesanan:</div>
-    ${itemRows}
-    
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:12px; margin-bottom:4px;">
-      <span style="font-size:13px; color:var(--tx2);">Total Tagihan</span>
-      <span style="font-size:15px; font-weight:700; font-family:var(--mono);color:var(--tx);">${fmtRp(t.total)}</span>
-    </div>
-    
-    ${statusHtml}
-
-    ${paymentSection}
-    
-    <div style="font-size:10px; color:var(--tx2); text-align:left; margin-bottom:16px; background:var(--surf2); padding:10px; border-radius:8px; line-height:1.5;">
-      <strong>NOTED:</strong><br>
-      - Hasil warna cetakan tidak bisa 100% sama dengan warna layar.<br>
-      - Barang tidak diambil lebih dari 7 hari dianggap hilang.
-    </div>
-
     <div style="font-size:11px; color:var(--tx3); text-align:center; margin-bottom:16px; line-height:1.6">
       Kasir: <strong style="color:var(--tx2)">${t.kasir}</strong> ${deadlineHtml}
     </div>
@@ -2257,24 +2073,9 @@ function kirimWANota(){
   var cb = document.getElementById('cb-tampil-status');
   var isTampil = cb ? cb.checked : false;
 
-  var docTitle = isTampil ? (notaForWA.bayar === 'Lunas' ? '*BUKTI PENGAMBILAN BARANG / LUNAS*' : '*BUKTI TRANSAKSI*') : '*INVOICE PESANAN*';
-  
-  var statusText = '';
-  var deadlineText = '';
-
-  if (isTampil) {
-      deadlineText = `⏳ *Jadwal Pengambilan:* ${notaForWA.deadline}\n`;
-      if (notaForWA.bayar === 'Lunas') {
-          statusText = `💳 *Status:* LUNAS ✔️ (${notaForWA.metode || 'Cash'})\n`;
-      } else if (notaForWA.bayar === 'DP') {
-          statusText = `💳 *Status:* Titip Uang (DP)\n💸 *Sudah Titip:* ${fmtRp(notaForWA.dibayar)}\n⚠️ *Sisa Tagihan:* ${fmtRp(notaForWA.sisa)}\n`;
-      } else {
-          statusText = `⚠️ *Sisa Tagihan:* ${fmtRp(notaForWA.sisa)}\n`;
-      }
-  } else {
-      statusText = `⚠️ *Sisa Tagihan:* ${fmtRp(notaForWA.sisa)}\n`;
-  }
-
+  var docTitle = isTampil ? '*BUKTI TRANSAKSI*' : '*INVOICE PESANAN*';
+  var statusText = `⚠️ *Sisa Tagihan:* ${fmtRp(notaForWA.sisa)}\n`;
+  var deadlineText = isTampil ? `⏳ *Jadwal Pengambilan:* ${notaForWA.deadline}\n` : '';
   var alamatText = notaForWA.alamat ? `\n📍 *Alamat:* ${notaForWA.alamat}` : '';
   
   // Format List Keranjang untuk Teks WA
