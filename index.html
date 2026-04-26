@@ -36,26 +36,7 @@
   --sh-lg:0 10px 25px -5px rgba(0,0,0,.08);
 }
 *{box-sizing:border-box;margin:0;padding:0}
-
-/* TWEAKS BIAR MIRIP APK NATIVE */
-body{
-  font-family:var(--fn);
-  background:var(--bg);
-  color:var(--tx);
-  font-size:13px;
-  min-height:100vh;
-  overflow-x:hidden;
-  -webkit-tap-highlight-color: transparent; /* Hilangkan kedipan biru saat tap */
-  -webkit-touch-callout: none;
-  -webkit-user-select: none; /* Mencegah teks terblokir tidak sengaja */
-  user-select: none;
-  overscroll-behavior-y: none; /* Mencegah pull-to-refresh browser */
-}
-input, textarea, select {
-  -webkit-user-select: auto;
-  user-select: auto;
-}
-
+body{font-family:var(--fn);background:var(--bg);color:var(--tx);font-size:13px;min-height:100vh;overflow-x:hidden;}
 ::-webkit-scrollbar{width:6px;height:6px}
 ::-webkit-scrollbar-thumb{background:#CBD5E1;border-radius:99px}
 
@@ -159,8 +140,7 @@ tr:hover td{background:#FAFBFC}
 .av-boss{background:var(--blue)}.av-admin{background:var(--purple)}.av-kasir{background:var(--green)}
 
 .app-body{display:flex;flex:1;min-height:calc(100vh - 60px)}
-.sidebar{width:240px;min-width:240px;background:var(--surf);border-right:1px solid var(--bdr);padding:16px 12px;overflow-y:auto; -ms-overflow-style: none; scrollbar-width: none;}
-.sidebar::-webkit-scrollbar { display: none; }
+.sidebar{width:240px;min-width:240px;background:var(--surf);border-right:1px solid var(--bdr);padding:16px 12px;overflow-y:auto}
 .sb-sec{font-size:11px;font-weight:700;color:var(--tx3);letter-spacing:.8px;text-transform:uppercase;padding:12px 12px 6px;margin-top:4px}
 .sbi{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;cursor:pointer;color:var(--tx2);font-size:13px;font-weight:600;transition:all .15s;user-select:none;margin-bottom:2px}
 .sbi:hover{background:var(--surf2);color:var(--tx)}
@@ -534,6 +514,34 @@ tr:hover td{background:#FAFBFC}
         <div class="card"><div class="card-t">Transaksi Hari Ini</div><div class="tbl-wrap" id="da-trx"></div></div>
       </div>
 
+      <!-- PENGATURAN TOKO (REKENING & QRIS) -->
+      <div class="page" id="pg-setting">
+        <div class="ph"><div class="pt">Pengaturan Toko</div><div class="ps">Ubah nomor rekening dan link gambar QRIS langsung dari sini.</div></div>
+        
+        <div class="g2" style="align-items:start">
+            <div class="card">
+               <div class="card-t">Data Rekening Bank</div>
+               <div class="field"><label>Rekening 1 (Misal BCA)</label><input type="text" id="set-bank1" placeholder="BCA: 123456789"></div>
+               <div class="field"><label>Rekening 2 (Misal BRI)</label><input type="text" id="set-bank2" placeholder="BRI: 987654321"></div>
+               <div class="field"><label>Atas Nama (A/N)</label><input type="text" id="set-an" placeholder="a.n Toko Abunawas"></div>
+            </div>
+            
+            <div class="card">
+               <div class="card-t">Pengaturan QRIS</div>
+               <div class="field"><label>Link Gambar QRIS (Bisa pakai link Google Drive)</label>
+                   <input type="text" id="set-qris-img" placeholder="Paste link Google Drive di sini...">
+                   <div style="font-size:10px; color:var(--tx3); margin-top:4px; line-height:1.4;">
+                       <b>Cara pakai Google Drive:</b> Upload foto QRIS ke GDrive > Klik Kanan > Share > Pastikan "Anyone with the link" > Copy Link > Paste di sini. Sistem akan otomatis mengubahnya jadi gambar.
+                   </div>
+               </div>
+               <div class="field"><label>Link Teks QRIS (Untuk di WA)</label>
+                   <input type="text" id="set-qris-link" placeholder="Misal: https://s.id/BayarQRIS">
+               </div>
+               <button class="btn btn-blue btn-full" onclick="simpanSetting()" style="margin-top:10px;">💾 Simpan Pengaturan</button>
+            </div>
+        </div>
+      </div>
+
       <!-- USER -->
       <div class="page" id="pg-user">
         <div class="ph"><div class="pt">Manajemen Karyawan / User</div><button class="btn btn-blue" onclick="openModalUser()">+ Tambah User</button></div>
@@ -651,27 +659,6 @@ tr:hover td{background:#FAFBFC}
   </div>
 </div>
 
-<div class="modal-bg" id="mo-pengeluaran">
-  <div class="modal">
-    <div class="modal-t">Input Pengeluaran Baru</div>
-    <div class="field">
-      <label>Keterangan / Nama Tagihan</label>
-      <input id="mv-nama" autocomplete="off" placeholder="Contoh: Beli Kertas HVS 10 Rim, Servis Printer...">
-    </div>
-    <div class="g2">
-      <div class="field"><label>Total Nominal (Rp)</label><input id="mv-total" type="number" placeholder="Tanpa titik/koma"></div>
-      <div class="field">
-        <label>Status Pembayaran</label>
-        <select id="mv-status" style="font-weight:600"><option value="Lunas">Sudah Dibayar Lunas</option><option value="Hutang">Belum Bayar (Hutang)</option></select>
-      </div>
-    </div>
-    <div class="modal-acts">
-      <button class="btn btn-ghost" style="flex:1" onclick="closeModal('mo-pengeluaran')">Batal</button>
-      <button class="btn btn-blue" style="flex:1" onclick="simpanPengeluaran()">Simpan Pengeluaran</button>
-    </div>
-  </div>
-</div>
-
 <!-- Modal Pilih Metode Pelunasan -->
 <div class="modal-bg" id="mo-pelunasan">
   <div class="modal" style="max-width:320px;">
@@ -771,6 +758,14 @@ var USERS = JSON.parse(localStorage.getItem('abunawas_usr')) || [
   {u:'kasir',p:'1234', nama:'Andi Pratama',role:'kasir',wa:'08333333333', aktif:true}
 ];
 
+var TOKO = JSON.parse(localStorage.getItem('abunawas_toko')) || {
+  bank1: 'BCA: 73827328327',
+  bank2: 'BRI: 19382992013213',
+  an: 'a.n ABUNAWAS PERCETAKAN',
+  qrisImg: 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=Silakan+Scan+QRIS+Ini',
+  qrisLink: 'https://bit.ly/Bayar-Abunawas'
+};
+
 var PELANGGAN = JSON.parse(localStorage.getItem('abunawas_pel')) || [
   {nama: 'Budi Santoso', wa: '081234567890', alamat: 'Jl. Merdeka No. 1, Kepanjen'},
   {nama: 'CV Maju Jaya', wa: '083456789012', alamat: ''}
@@ -805,6 +800,7 @@ function saveData() {
   localStorage.setItem('abunawas_vnd', JSON.stringify(VENDORS));
   localStorage.setItem('abunawas_peng', JSON.stringify(PENGELUARAN));
   localStorage.setItem('abunawas_usr', JSON.stringify(USERS));
+  localStorage.setItem('abunawas_toko', JSON.stringify(TOKO));
 }
 
 var MENUS = {
@@ -823,7 +819,8 @@ var MENUS = {
     {id:'pelanggan',label:'Data Pelanggan',ico:'users'},
     {id:'vendor',label:'Master Vendor',ico:'users'},
     {id:'laporan',label:'Laporan Bisnis',ico:'chart'},
-    {sec:'Sistem Keamanan'},
+    {sec:'Sistem & Pengaturan'},
+    {id:'setting',label:'Pengaturan Toko',ico:'gear'},
     {id:'user',label:'Kelola Karyawan',ico:'users'},
     {id:'backup',label:'Backup Database',ico:'shield'}
   ],
@@ -859,7 +856,8 @@ var ICOS={
   tag:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>',
   chart:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>',
   users:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>',
-  shield:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>'
+  shield:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>',
+  gear: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>'
 };
 
 var curUser = null, editBrgIdx = -1;
@@ -1241,9 +1239,40 @@ function showPage(id){
     'dashboard':renderDash, 'input':function(){populateFiBrg(); renderCart();}, 'transaksi':renderTrx, 'piutang':renderPiutang,
     'pengeluaran':function(){populateFiVnd(); renderPengeluaran();}, 'hutang-pengeluaran':renderHutangPengeluaran, 'pelanggan':renderPelanggan,
     'barang':renderBrg, 'laporan':renderLaporan, 'dash-admin':renderDashAdmin,
-    'user':renderUser, 'kasir-riwayat':renderKasirRiwayat, 'vendor':renderVendor, 'hutang-vendor':renderHutangVendor
+    'user':renderUser, 'kasir-riwayat':renderKasirRiwayat, 'vendor':renderVendor, 'hutang-vendor':renderHutangVendor,
+    'setting':renderSetting
   };
   if(fn[id]) try{fn[id]();}catch(e){console.error('Render error:',id,e);}
+}
+
+/* ════════════════ MENU PENGATURAN TOKO (REKENING & QRIS) ════════════════ */
+function renderSetting() {
+    document.getElementById('set-bank1').value = TOKO.bank1 || '';
+    document.getElementById('set-bank2').value = TOKO.bank2 || '';
+    document.getElementById('set-an').value = TOKO.an || '';
+    document.getElementById('set-qris-img').value = TOKO.qrisImg || '';
+    document.getElementById('set-qris-link').value = TOKO.qrisLink || '';
+}
+
+function simpanSetting() {
+    TOKO.bank1 = document.getElementById('set-bank1').value.trim();
+    TOKO.bank2 = document.getElementById('set-bank2').value.trim();
+    TOKO.an = document.getElementById('set-an').value.trim();
+    TOKO.qrisLink = document.getElementById('set-qris-link').value.trim();
+    
+    let rawQrisImg = document.getElementById('set-qris-img').value.trim();
+    
+    // Auto Convert Google Drive View Link to Direct Image Link
+    if(rawQrisImg.includes('drive.google.com/file/d/')) {
+       let match = rawQrisImg.match(/\/d\/(.+?)\//);
+       if(match && match[1]) {
+           rawQrisImg = `https://drive.google.com/uc?export=view&id=${match[1]}`;
+       }
+    }
+    
+    TOKO.qrisImg = rawQrisImg;
+    saveData();
+    toast('✔️ Pengaturan Rekening & QRIS berhasil disimpan!', 2500);
 }
 
 /* ════════════════ DASHBOARD KHUSUS BOSS ════════════════ */
@@ -2038,13 +2067,13 @@ function buildNotaInner(t, isTampil) {
          <div style="display:flex; align-items:center; justify-content:center; gap:16px; margin-bottom:12px; background:var(--surf2); padding:12px; border-radius:8px;">
            <div style="font-size:11px; color:var(--tx2); line-height:1.6; text-align:left;">
              <strong>Transfer Bank:</strong><br>
-             BCA: 73827328327<br>
-             BRI: 19382992013213<br>
-             a.n ABUNAWAS PERCETAKAN
+             ${TOKO.bank1}<br>
+             ${TOKO.bank2}<br>
+             ${TOKO.an}
            </div>
            <div>
-             <!-- GANTI URL GAMBAR INI DENGAN LINK GAMBAR QRIS ASLI ANDA -->
-             <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=Silakan+Scan+QRIS+Ini" style="width:70px; height:70px; border-radius:4px; mix-blend-mode: multiply;" alt="QRIS">
+             <!-- GAMBAR QRIS DARI PENGATURAN -->
+             <img src="${TOKO.qrisImg}" style="width:70px; height:70px; border-radius:4px; mix-blend-mode: multiply;" alt="QRIS">
            </div>
          </div>
          <div style="text-align:center; font-size:14px; font-weight:700; color:var(--red); margin-bottom:8px;">
@@ -2208,12 +2237,12 @@ function kirimWAInfoBayar() {
 ${notaForWA.bayar === 'DP' ? `💸 *Sudah Dititipkan:* ${fmtRp(notaForWA.dibayar)}\n` : ''}⚠️ *SISA PEMBAYARAN: ${fmtRp(notaForWA.sisa)}*
 
 💳 *METODE PEMBAYARAN VIA TRANSFER:*
-BCA: 73827328327
-BRI: 19382992013213
-A.n ABUNAWAS PERCETAKAN
+${TOKO.bank1}
+${TOKO.bank2}
+${TOKO.an}
 
 Atau via *QRIS*, silakan klik link berikut untuk melihat Barcode QRIS kami:
-👉 https://bit.ly/Bayar-Abunawas
+👉 ${TOKO.qrisLink}
 
 _(Ditunggu bukti foto transfer/pembayarannya ya kak agar pesanan bisa segera diproses. Terima kasih! 🙏)_`;
 
