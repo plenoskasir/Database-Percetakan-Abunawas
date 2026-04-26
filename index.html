@@ -757,6 +757,17 @@ function saveData() {
   localStorage.setItem('abunawas_peng', JSON.stringify(PENGELUARAN));
   localStorage.setItem('abunawas_usr', JSON.stringify(USERS));
   localStorage.setItem('abunawas_toko', JSON.stringify(TOKO));
+  
+  // Auto-Sync di belakang layar setiap kali ada data disimpan
+  autoSyncToSheets();
+}
+
+var syncTimeout;
+function autoSyncToSheets() {
+  clearTimeout(syncTimeout);
+  syncTimeout = setTimeout(function() {
+      syncToSheets(true); // true = mode diam/silent
+  }, 5000); // Jeda 5 detik agar tidak spam server
 }
 
 var MENUS = {
@@ -856,21 +867,23 @@ function sendWA(phone, message) {
 }
 
 /* ════════════════ FUNGSI API GOOGLE SHEETS SYNC ════════════════ */
-async function syncToSheets() {
+async function syncToSheets(silent = false) {
   var url = localStorage.getItem('abunawas_sheet_url');
   if (!url) {
-    openModal('mo-sheets-confirm');
+    if(!silent) openModal('mo-sheets-confirm');
     return;
   }
   
   var btn1 = document.getElementById('btn-sync');
   var btn2 = document.getElementById('btn-sync-brg');
   var btn3 = document.getElementById('btn-sync-kasir'); 
-  if(btn1) { btn1.innerHTML = '⏳ Menyinkronkan...'; btn1.disabled = true; }
-  if(btn2) { btn2.innerHTML = '⏳ Syncing...'; btn2.disabled = true; }
-  if(btn3) { btn3.innerHTML = '⏳ Syncing...'; btn3.disabled = true; }
   
-  toast("Mulai mengirim data ke Google Sheets...", 3000);
+  if(!silent) {
+      if(btn1) { btn1.innerHTML = '⏳ Menyinkronkan...'; btn1.disabled = true; }
+      if(btn2) { btn2.innerHTML = '⏳ Syncing...'; btn2.disabled = true; }
+      if(btn3) { btn3.innerHTML = '⏳ Syncing...'; btn3.disabled = true; }
+      toast("Mulai mengirim data ke Google Sheets...", 3000);
+  }
 
   var payload = {
     method: 'POST',
@@ -886,14 +899,16 @@ async function syncToSheets() {
 
   try {
     await fetch(url, payload);
-    toast("✔️ Data berhasil dikirim ke Google Sheets!", 3500);
+    if(!silent) toast("✔️ Data berhasil dikirim ke Google Sheets!", 3500);
   } catch (error) {
-    toast("⚠️ Gagal terhubung. Pastikan internet lancar dan URL benar.", 3000);
+    if(!silent) toast("⚠️ Gagal terhubung. Pastikan internet lancar dan URL benar.", 3000);
   }
   
-  if(btn1) { btn1.innerHTML = 'Simpan URL & Jalankan Sync'; btn1.disabled = false; }
-  if(btn2) { btn2.innerHTML = 'Sync Sheets'; btn2.disabled = false; }
-  if(btn3) { btn3.innerHTML = 'Sync Data ke Excel'; btn3.disabled = false; }
+  if(!silent) {
+      if(btn1) { btn1.innerHTML = 'Simpan URL & Jalankan Sync'; btn1.disabled = false; }
+      if(btn2) { btn2.innerHTML = 'Sync Sheets'; btn2.disabled = false; }
+      if(btn3) { btn3.innerHTML = 'Sync Data ke Excel'; btn3.disabled = false; }
+  }
 }
 
 function saveSheetUrl() {
