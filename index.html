@@ -4,6 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
 <title>Abunawas Percetakan & Konveksi</title>
+
+<!-- Favicon / Logo Tab Browser -->
+<link rel="icon" href="HARGA.jpg" type="image/jpeg">
+<link rel="apple-touch-icon" href="HARGA.jpg">
+
 <!-- PWA Manifest & Pinned App Config -->
 <meta name="theme-color" content="#2563EB">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -2112,7 +2117,8 @@ async function bagikanGambarNota() {
     hideElements.forEach(el => el.style.display = '');
 
     canvas.toBlob(async function(blob) {
-      const file = new File([blob], 'Nota-' + notaForWA.id + '.png', { type: 'image/png' });
+      let safeName = notaForWA.pelanggan.replace(/[^a-zA-Z0-9]/g, '_');
+      const file = new File([blob], 'Nota-' + safeName + '-' + notaForWA.id + '.png', { type: 'image/png' });
       if (navigator.canShare && navigator.canShare({ files: [file] })) {
         try {
           await navigator.share({
@@ -2125,7 +2131,7 @@ async function bagikanGambarNota() {
       }
       
       const url = URL.createObjectURL(blob); const a = document.createElement('a');
-      a.href = url; a.download = 'Nota-' + notaForWA.id + '.png'; a.click(); URL.revokeObjectURL(url);
+      a.href = url; a.download = 'Nota-' + safeName + '-' + notaForWA.id + '.png'; a.click(); URL.revokeObjectURL(url);
       toast("Gambar nota berhasil diunduh! Silakan lampirkan gambar ini ke WA pelanggan.", 3500);
     }, 'image/png');
   } catch(err) {
@@ -2228,6 +2234,26 @@ function kirimWAInfoBayar() {
   var msg = `Halo *${notaForWA.pelanggan}*, untuk pesanan dengan ID *${notaForWA.id}*, berikut adalah detail tagihan Anda:\n\n💰 *Total Tagihan:* ${fmtRp(notaForWA.total)}\n${notaForWA.bayar === 'DP' ? `💸 *Sudah Dititipkan:* ${fmtRp(notaForWA.dibayar)}\n` : ''}⚠️ *SISA PEMBAYARAN: ${fmtRp(notaForWA.sisa)}*\n\n💳 *METODE PEMBAYARAN VIA TRANSFER:*\n${rekWa}\n\nAtau via *QRIS*, silakan klik link berikut untuk melihat Barcode QRIS kami:\n👉 ${TOKO.qrisLink}\n\n_(Ditunggu bukti foto transfer/pembayarannya ya kak agar pesanan bisa segera diproses. Terima kasih! 🙏)_`;
   if(notaForWA.wa){ sendWA(notaForWA.wa, msg); } else { alert("Pesan WA Info Bayar yang akan dikirim:\n\n" + msg); }
 }
+
+function kirimPDF() {
+  if(!notaForWA) return;
+  toast("Sedang mengonversi dan mengunduh file PDF...", 3000);
+  var element = document.getElementById('nota-preview-card');
+  
+  var opt = {
+    margin:       0.5,
+    filename:     'Nota-' + notaForWA.pelanggan.replace(/[^a-zA-Z0-9]/g, '_') + '-' + notaForWA.id + '.pdf',
+    image:        { type: 'jpeg', quality: 1 },
+    html2canvas:  { scale: 2, useCORS: true, backgroundColor: '#ffffff' },
+    jsPDF:        { unit: 'in', format: 'a5', orientation: 'portrait' }
+  };
+  
+  html2pdf().set(opt).from(element).save();
+}
+
+/* ════════════════ EXPORT BACKUP JSON & CSV ════════════════ */
+function backupJSON(){var b=new Blob([localStorage.getItem('abunawas_trx')],{type:'application/json'});var a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='Database-PrintKasir-'+nowDate()+'.json';a.click();}
+function backupCSV(){var h='ID,Tanggal,Pelanggan,WA,Alamat,Item_Pesanan,Total_Harga,Dibayar,Sisa,Status_Bayar,Metode_Bayar,Nama_Kasir\n';var r=TRX.map(function(t){let trxItems = t.items || [{barang: t.barang, qty: t.qty}]; let itemStr = trxItems.map(i => i.barang + ' x' + i.qty).join(' | '); return[t.id,t.tgl,t.pelanggan,t.wa,t.alamat||'-',itemStr,t.total,t.dibayar,t.sisa,t.bayar,t.metode||'Cash',t.kasir].join(',');}).join('\n');var b=new Blob([h+r],{type:'text/csv'});var a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='Laporan-Transaksi-'+nowDate()+'.csv';a.click();}
 
 /* ════ INIT DEFAULT LOGIN SCREEN ════ */
 document.getElementById('inp-u').value='boss'; document.getElementById('inp-p').value='1234';
