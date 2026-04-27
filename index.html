@@ -570,15 +570,23 @@ tr:hover td{background:#FAFBFC}
                 <div class="field"><label>Total Nota Belanja (Rp)</label>
                     <input id="mv-total-view" type="text" class="auto" readonly placeholder="Rp 0" style="font-family:var(--mono); font-weight:700; font-size:18px;">
                 </div>
-                <div class="field"><label>Status Pembayaran Boss</label>
-                  <select id="mv-status" style="font-weight:600">
-                    <option value="Lunas">Sudah Lunas (Uang Laci Kasir)</option>
-                    <option value="Lunas Transfer">Sudah Lunas (Transfer Bank)</option>
-                    <option value="Hutang">Belum Bayar (Kasbon/Hutang)</option>
-                  </select>
+                <div class="field">
+                  <label>Status Pembayaran Boss</label>
+                  <div class="radio-btn-group">
+                    <label class="radio-lbl r-hutang"><input type="radio" name="mv_bayar" value="Hutang" onchange="toggleDPMv()"> Kasbon</label>
+                    <label class="radio-lbl r-dp"><input type="radio" name="mv_bayar" value="DP" onchange="toggleDPMv()"> DP/Titip Uang</label>
+                    <label class="radio-lbl r-lunas"><input type="radio" name="mv_bayar" value="Lunas" checked onchange="toggleDPMv()"> Lunas ✔️</label>
+                  </div>
                 </div>
               </div>
-              <button class="btn btn-green btn-full" style="padding:14px; font-size:14px;" onclick="simpanPengeluaranCart()">💾 Simpan & Rekap Nota Belanja</button>
+              
+              <div class="field" id="mv-dp-wrap" style="display:none; background:var(--amber-l); padding:10px; border-radius:8px; border:1px dashed var(--amber); margin-top:12px;">
+                <label style="color:var(--amber-d)">Nominal Uang Titipan DP (Rp)</label>
+                <input type="text" id="mv-dp-val" placeholder="Contoh: 50.000" style="border-color:var(--amber); font-weight:700; font-family:var(--mono); background:#fff;" oninput="this.value=formatRibuan(this.value); hitungSisaDPMv();">
+                <div id="mv-dp-sisa" style="font-size:12px; color:var(--red); margin-top:8px; font-weight:700;"></div>
+              </div>
+              
+              <button class="btn btn-green btn-full" style="padding:14px; font-size:14px; margin-top:16px;" onclick="simpanPengeluaranCart()">💾 Simpan & Rekap Nota Belanja</button>
             </div>
             
           </div>
@@ -1011,7 +1019,7 @@ var TRX = JSON.parse(localStorage.getItem('abunawas_trx')) || [
 var trxCtr = TRX.length > 0 ? parseInt(TRX[0].id.split('-').pop()) + 1 : 1; 
 
 var PENGELUARAN = JSON.parse(localStorage.getItem('abunawas_peng')) || [
-  {id:'EXP-001',tgl:dMinus(0), kategori:'Belanja Vendor / Maklon Cetak', vendor:'Toko A', total:350000, status:'Lunas', items:[{barang:'Tinta Cetak', qty:1, harga:350000, total:350000}]}
+  {id:'EXP-001',tgl:dMinus(0), kategori:'Belanja Vendor / Maklon Cetak', vendor:'Toko A', total:350000, status:'Lunas', dibayar:350000, sisa:0, items:[{barang:'Tinta Cetak', qty:1, harga:350000, total:350000}]}
 ];
 
 var KASBON = JSON.parse(localStorage.getItem('abunawas_kasbon')) || [];
@@ -1127,8 +1135,8 @@ function getHarga(b,qty){var t=b.tiers.find(function(x){return qty<=x.max;})||b.
 
 function badgeBayar(s){
     if(s==='Lunas') return '<span class="badge bg-green"><span class="dot dot-g"></span>Lunas</span>';
-    if(s==='DP') return '<span class="badge bg-amber"><span class="dot dot-a"></span>Titip Uang</span>';
-    return '<span class="badge bg-red"><span class="dot dot-r"></span>Belum Lunas</span>';
+    if(s==='DP') return '<span class="badge bg-amber"><span class="dot dot-a"></span>DP</span>';
+    return '<span class="badge bg-red"><span class="dot dot-r"></span>Kasbon</span>';
 }
 
 /* ════════════════ FUNGSI KIRIM WA DIRECT ════════════════ */
@@ -1265,7 +1273,10 @@ async function prosesAIPengeluaran() {
     document.getElementById('mv-nama').value = data.ket || '';
     document.getElementById('mv-qty').value = data.qty || 1;
     document.getElementById('mv-harga').value = data.harga_satuan ? formatRibuan(data.harga_satuan) : '';
-    if(data.status) document.getElementById('mv-status').value = data.status;
+    if(data.status) {
+        let r = document.querySelector(`input[name="mv_bayar"][value="${data.status}"]`);
+        if(r) { r.checked = true; toggleDPMv(); }
+    }
 
     toast("✨ Ekstraksi data belanja selesai!", 2500); document.getElementById('ai-peng-text').value = '';
   } catch (err) { console.error(err); toast("Maaf, AI gagal memproses data kulakan.", 3000);
@@ -1364,7 +1375,12 @@ function renderLaci() {
   TRX.forEach(t => { if(t.tgl === d && t.metode === 'Cash' && t.dibayar > 0) cashIn += t.dibayar; });
 
   let cashOut = 0;
-  PENGELUARAN.forEach(p => { if(p.tgl === d && p.status === 'Lunas') cashOut += p.total; });
+  PENGELUARAN.forEach(p => { 
+      if(p.tgl === d) {
+          if (p.status === 'Lunas') cashOut += p.total;
+          else if (p.status === 'DP') cashOut += (p.dibayar || 0);
+      } 
+  });
   
   let kasbonOut = 0;
   KASBON.forEach(k => { if(k.tgl === d) kasbonOut += k.nominal; });
@@ -1790,6 +1806,28 @@ function tambahKeKeranjangVendor() {
     renderCartVendor();
 }
 
+function hitungSisaDPMv() {
+    let gTot = CART_VND.reduce((s,i) => s + i.total, 0);
+    let dp = cleanRibuan(document.getElementById('mv-dp-val').value);
+    let sisa = gTot - dp; if(sisa < 0) sisa = 0;
+    let el = document.getElementById('mv-dp-sisa');
+    if(el) el.textContent = 'Sisa Hutang: ' + fmtRp(sisa);
+}
+
+function toggleDPMv() {
+    let val = document.querySelector('input[name="mv_bayar"]:checked').value;
+    let wrap = document.getElementById('mv-dp-wrap');
+    let inp = document.getElementById('mv-dp-val');
+    if(val === 'DP') {
+        wrap.style.display = 'block';
+        let gTot = CART_VND.reduce((s,i) => s + i.total, 0);
+        if(!inp.value && gTot > 0) inp.value = formatRibuan(Math.round(gTot / 2));
+        hitungSisaDPMv();
+    } else {
+        wrap.style.display = 'none'; inp.value = '';
+    }
+}
+
 function renderCartVendor() {
     let wrap = document.getElementById('cart-vnd-wrap'); if(!wrap) return;
     if(CART_VND.length === 0) { wrap.innerHTML = '<div style="text-align:center; padding:16px; color:var(--tx3); font-size:12px;">Keranjang belanja kosong.</div>'; document.getElementById('mv-total-view').value = 'Rp 0'; return; }
@@ -1799,17 +1837,23 @@ function renderCartVendor() {
     CART_VND.forEach((c, i) => { gTot += c.total; html += `<tr><td style="font-weight:600">${c.barang}<br><span style="font-size:10px; color:var(--tx2); font-family:var(--mono);">${fmtRp(c.harga)}/satuan</span></td><td style="text-align:center">x${c.qty}</td><td style="font-weight:700; color:var(--amber); text-align:right;">${fmtRp(c.total)}</td><td style="text-align:right;"><button class="btn btn-red btn-xs" onclick="hapusDariKeranjangVendor(${i})">X</button></td></tr>`; });
     html += '</tbody></table>'; wrap.innerHTML = html;
     document.getElementById('mv-total-view').value = fmtRp(gTot);
+    
+    if(document.querySelector('input[name="mv_bayar"]:checked').value === 'DP') toggleDPMv();
 }
 function hapusDariKeranjangVendor(idx) { CART_VND.splice(idx, 1); renderCartVendor(); }
 
 function simpanPengeluaranCart() {
   let kat = document.getElementById('mv-kategori').value;
   let vnd = document.getElementById('mv-vendor').value.trim();
-  let stat = document.getElementById('mv-status').value;
+  let stat = document.querySelector('input[name="mv_bayar"]:checked').value;
   
   if(CART_VND.length === 0) { alert('Keranjang belanja/pengeluaran kosong! Masukkan minimal 1 item.'); return; }
   
   let gTot = CART_VND.reduce((s,i) => s + i.total, 0);
+  let dpVal = cleanRibuan(document.getElementById('mv-dp-val').value);
+  
+  let dibayar = (stat === 'Lunas') ? gTot : ((stat === 'DP') ? dpVal : 0);
+  let sisa = gTot - dibayar;
   
   if(vnd && !VENDORS.find(v => v.nama.toLowerCase() === vnd.toLowerCase())) {
       VENDORS.push({nama: vnd, kontak: '-'});
@@ -1819,11 +1863,13 @@ function simpanPengeluaranCart() {
   let headKet = (CART_VND.length === 1) ? CART_VND[0].barang : `${CART_VND[0].barang} (+${CART_VND.length-1} item lain)`;
 
   PENGELUARAN.unshift({
-      id:'EXP-'+String(PENGELUARAN.length+1).padStart(3,'0'), tgl:nowDate(), ket:headKet, kategori:kat, vendor:vnd, total:gTot, status:stat, items: JSON.parse(JSON.stringify(CART_VND))
+      id:'EXP-'+String(PENGELUARAN.length+1).padStart(3,'0'), tgl:nowDate(), ket:headKet, kategori:kat, vendor:vnd, total:gTot, status:stat, dibayar:dibayar, sisa:sisa, items: JSON.parse(JSON.stringify(CART_VND))
   });
   
   saveData();
-  document.getElementById('mv-vendor').value=''; document.getElementById('mv-status').value='Lunas';
+  document.getElementById('mv-vendor').value=''; 
+  document.querySelector('input[name="mv_bayar"][value="Lunas"]').checked = true; toggleDPMv();
+  
   CART_VND = []; renderCartVendor(); renderPengeluaran(); 
   if(document.getElementById('pg-laci') && document.getElementById('pg-laci').classList.contains('on')) renderLaci();
   toast('✔️ Nota Belanja berhasil disimpan!', 2500);
@@ -1841,35 +1887,44 @@ function renderPengeluaran(){
   var isBoss = (curUser && curUser.role === 'boss');
   var rows=PENGELUARAN.map(function(v,i){
     let ketExtra = v.vendor ? `<br><span style="font-size:10px;color:var(--tx3)">Vendor: ${v.vendor}</span>` : '';
-    let isHutang = v.status === 'Hutang';
+    let isHutang = v.status === 'Hutang' || v.status === 'DP';
     let delBtn = isBoss ? `<button class="btn btn-red btn-xs" onclick="hapusPengeluaran('${v.id}')" style="margin-left:4px">Hapus</button>` : '';
+    
+    let tagihanHtml = `${fmtRp(v.total)}`;
+    if (v.status === 'DP') tagihanHtml += `<br><span style="font-size:10px;color:var(--amber-d)">DP: ${fmtRp(v.dibayar)}</span><br><span style="font-size:10px;color:var(--red)">Sisa: ${fmtRp(v.sisa)}</span>`;
+    if (v.status === 'Hutang') tagihanHtml += `<br><span style="font-size:10px;color:var(--red)">Sisa: ${fmtRp(v.sisa !== undefined ? v.sisa : v.total)}</span>`;
 
     return `<tr><td class="mono">${v.id}<br><span style="font-size:10px;color:var(--tx3)">${v.tgl}</span></td>
       <td style="font-weight:600">${v.ket}${ketExtra}</td>
       <td><span class="badge bg-gray">${v.kategori}</span></td>
-      <td style="font-weight:700;color:var(--amber)">${fmtRp(v.total)}</td>
-      <td>${badgeBayar(v.status.includes('Lunas')?'Lunas':'Hutang')}</td>
+      <td style="font-weight:700;color:var(--amber)">${tagihanHtml}</td>
+      <td>${badgeBayar(v.status)}</td>
       <td>${isHutang?`<button class="btn btn-green btn-xs" onclick="lunasPengeluaran(${i})">Tandai Lunas</button>`:''}${delBtn}</td></tr>`;
   }).join('');
   document.getElementById('pengeluaran-tbl').innerHTML=`<table><thead><tr><th>ID / Tgl</th><th>Rangkuman Nota</th><th>Kategori</th><th>Total Tagihan</th><th>Status</th><th>Aksi</th></tr></thead><tbody>${rows||'<tr><td colspan="6" style="text-align:center">Data kosong.</td></tr>'}</tbody></table>`;
 }
-function lunasPengeluaran(i){ PENGELUARAN[i].status='Lunas'; saveData(); renderPengeluaran(); toast('Tagihan belanja sudah dibayar!'); }
+function lunasPengeluaran(i){ 
+    PENGELUARAN[i].status='Lunas'; 
+    PENGELUARAN[i].dibayar = PENGELUARAN[i].total;
+    PENGELUARAN[i].sisa = 0;
+    saveData(); renderPengeluaran(); toast('Tagihan belanja sudah dibayar!'); 
+}
 
 /* ════════════════ HUTANG & DATA LAINNYA ════════════════ */
 function renderHutangPengeluaran(){
-  var data=PENGELUARAN.filter(v => v.status==='Hutang' && v.kategori !== 'Belanja Vendor / Maklon Cetak');
-  var tot=data.reduce((s,v)=>s+v.total,0);
+  var data=PENGELUARAN.filter(v => (v.status==='Hutang' || v.status==='DP') && v.kategori !== 'Belanja Vendor / Maklon Cetak');
+  var tot=data.reduce((s,v)=>s+(v.sisa !== undefined ? v.sisa : v.total),0);
   document.getElementById('hp-stats').innerHTML= sc('Tagihan Toko Belum Bayar',data.length+' tagihan','color:var(--red)','','color:var(--tx2)')+ sc('Total Hutang Operasional',fmtRp(tot),'color:var(--red)','Wajib disiapkan','color:var(--red)');
-  var rows=data.map((v,i) => `<tr><td style="font-weight:600">${v.ket}</td><td class="mono">${v.tgl}</td><td style="font-weight:700;color:var(--red)">${fmtRp(v.total)}</td><td><button class="btn btn-green btn-xs" onclick="lunasPengeluaran(${PENGELUARAN.indexOf(v)})">Bayar Tagihan Ini</button></td></tr>`).join('');
-  document.getElementById('hp-tbl').innerHTML=`<table><thead><tr><th>Keterangan Tagihan</th><th>Tanggal</th><th>Total Nominal</th><th>Aksi Pembayaran</th></tr></thead><tbody>${rows||'<tr><td colspan="4" style="text-align:center">Tidak ada hutang operasional.</td></tr>'}</tbody></table>`;
+  var rows=data.map((v,i) => `<tr><td style="font-weight:600">${v.ket}</td><td class="mono">${v.tgl}</td><td style="font-weight:700;color:var(--red)">${fmtRp(v.sisa !== undefined ? v.sisa : v.total)}</td><td><button class="btn btn-green btn-xs" onclick="lunasPengeluaran(${PENGELUARAN.indexOf(v)})">Bayar Tagihan Ini</button></td></tr>`).join('');
+  document.getElementById('hp-tbl').innerHTML=`<table><thead><tr><th>Keterangan Tagihan</th><th>Tanggal</th><th>Sisa Nominal</th><th>Aksi Pembayaran</th></tr></thead><tbody>${rows||'<tr><td colspan="4" style="text-align:center">Tidak ada hutang operasional.</td></tr>'}</tbody></table>`;
 }
 
 function renderHutangVendor(){
-  var data = PENGELUARAN.filter(v => v.status==='Hutang' && v.kategori === 'Belanja Vendor / Maklon Cetak');
-  var tot = data.reduce((s,v)=>s+v.total,0);
+  var data = PENGELUARAN.filter(v => (v.status==='Hutang' || v.status==='DP') && v.kategori === 'Belanja Vendor / Maklon Cetak');
+  var tot = data.reduce((s,v)=>s+(v.sisa !== undefined ? v.sisa : v.total),0);
   document.getElementById('hv-stats').innerHTML= sc('Kasbon ke Vendor',data.length+' nota belanja','color:var(--red)','Ke Pihak Vendor/Toko Luar','color:var(--tx2)')+ sc('Total Kasbon Kulakan',fmtRp(tot),'color:var(--red)','Modal wajib bayar','color:var(--red)');
-  var rows=data.map((v,i) => `<tr><td class="mono">${v.tgl}</td><td style="font-weight:600">${v.vendor||'-'}</td><td style="font-size:12px;color:var(--tx)">${v.ket}</td><td style="font-weight:700;color:var(--red)">${fmtRp(v.total)}</td><td><button class="btn btn-green btn-xs" onclick="lunasPengeluaran(${PENGELUARAN.indexOf(v)})">Tandai Sudah Transfer</button></td></tr>`).join('');
-  document.getElementById('hv-tbl').innerHTML=`<table><thead><tr><th>Tgl Belanja</th><th>Nama Vendor / Toko</th><th>Rangkuman Nota</th><th>Tagihan Modal Vendor</th><th>Aksi Pelunasan</th></tr></thead><tbody>${rows||'<tr><td colspan="5" style="text-align:center">Tidak ada hutang belanja ke vendor saat ini.</td></tr>'}</tbody></table>`;
+  var rows=data.map((v,i) => `<tr><td class="mono">${v.tgl}</td><td style="font-weight:600">${v.vendor||'-'}</td><td style="font-size:12px;color:var(--tx)">${v.ket}</td><td style="font-weight:700;color:var(--red)">${fmtRp(v.sisa !== undefined ? v.sisa : v.total)}</td><td><button class="btn btn-green btn-xs" onclick="lunasPengeluaran(${PENGELUARAN.indexOf(v)})">Tandai Sudah Transfer</button></td></tr>`).join('');
+  document.getElementById('hv-tbl').innerHTML=`<table><thead><tr><th>Tgl Belanja</th><th>Nama Vendor / Toko</th><th>Rangkuman Nota</th><th>Sisa Tagihan Vendor</th><th>Aksi Pelunasan</th></tr></thead><tbody>${rows||'<tr><td colspan="5" style="text-align:center">Tidak ada hutang belanja ke vendor saat ini.</td></tr>'}</tbody></table>`;
 }
 
 /* ════════════════ PEGAWAI, PELANGGAN, VENDOR, BARANG ════════════════ */
