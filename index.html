@@ -13,7 +13,7 @@
 <meta name="theme-color" content="#2563EB">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<link rel="manifest" href='data:application/manifest+json,{"name":"Abunawas Percetakan","short_name":"Abunawas","display":"standalone","background_color":"#F7F8FA","theme_color":"#2563EB","icons":[{"src":"https://cdn-icons-png.flaticon.com/512/3063/3063822.png","sizes":"512x512","type":"image/png"}]}'>
+<link rel="manifest" href='data:application/manifest+json,{"name":"Abunawas Percetakan","short_name":"Abunawas","display":"standalone","start_url":".","background_color":"#F7F8FA","theme_color":"#2563EB","icons":[{"src":"https://cdn-icons-png.flaticon.com/512/3063/3063822.png","sizes":"512x512","type":"image/png"}]}'>
 
 <!-- Google Fonts -->
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=DM+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -268,7 +268,11 @@ tr:hover td{background:var(--surf2)}
       <div style="font-size:32px; font-weight:900; color:var(--tx); letter-spacing:-1px;">Katalog Harga Publik</div>
       <div style="font-size:15px; color:var(--tx2); margin-top:8px;">Daftar harga cetak & layanan kami. Harga dapat berubah sewaktu-waktu.</div>
     </div>
-    <div id="katalog-content"></div>
+    
+    <div id="katalog-content">
+      <!-- Injeksi Text Pricelist via JS -->
+    </div>
+    
     <div style="text-align:center; margin-top:60px; padding:20px; color:var(--tx3); font-size:13px; font-weight:600;">
       &copy; Abunawas Percetakan & Konveksi
     </div>
@@ -281,19 +285,10 @@ tr:hover td{background:var(--surf2)}
     
     <!-- HEADER LOGIN -->
     <div style="text-align:center;margin-bottom:32px">
-      <!-- Gambar Logo -->
-      <img src="HARGA.jpg" alt="Abunawas Percetakan" style="max-width:100%; height:auto; max-height:120px; margin-bottom:16px; border-radius:12px; box-shadow:var(--sh-lg);" onerror="this.style.display='none'; document.getElementById('fb-logo-text').style.display='block';">
-      
-      <!-- Fallback Logo -->
-      <div id="fb-logo-text" style="display:none;">
-          <div style="width:84px;height:84px;background:linear-gradient(135deg,var(--blue),var(--purple));border-radius:24px;display:inline-flex;align-items:center;justify-content:center;box-shadow:0 10px 30px rgba(37,99,235,.4);margin-bottom:20px; margin-left:auto; margin-right:auto;">
-            <svg width="44" height="44" viewBox="0 0 24 24" fill="white"><path d="M19 3H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V5a2 2 0 00-2-2zm-7 14H7v-2h5v2zm5-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
-          </div>
-          <div style="font-size:32px;font-weight:900;letter-spacing:-1px; color:var(--tx);">Abunawas</div>
-      </div>
-
-      <div style="font-size:18px;font-weight:800; color:var(--tx); letter-spacing:-0.5px;">Portal Manajemen Toko</div>
-      <div style="font-size:13px;color:var(--tx2);margin-top:6px;font-weight:600;">Sistem Kasir & ERP Digital Printing <span style="color:var(--blue)">✨AI</span></div>
+      <img src="HARGA.jpg" alt="Abunawas Percetakan" style="max-width:100%; height:auto; max-height:120px; margin-bottom:16px; border-radius:12px; box-shadow:var(--sh-lg);" onerror="this.style.display='none';">
+      <div style="font-size:32px;font-weight:900;letter-spacing:-1px; color:var(--tx); line-height:1.2;">Abunawas</div>
+      <div style="font-size:18px;font-weight:800; color:var(--tx2); letter-spacing:-0.5px; margin-top:4px;">Percetakan & Konveksi</div>
+      <div style="font-size:13px;color:var(--blue);font-weight:800; margin-top:8px; letter-spacing:0.5px; text-transform:uppercase;">Melayani Digital Printing <span style="font-size:12px">✨AI</span></div>
     </div>
     
     <div class="lcard">
@@ -308,6 +303,10 @@ tr:hover td{background:var(--surf2)}
       <div style="display:flex;gap:12px;margin-top:20px">
         <button class="btn btn-blue btn-lg" style="flex:1; padding:14px; font-size:15px; font-weight:800; letter-spacing:0.5px;" onclick="login()">Masuk ke Sistem &rarr;</button>
       </div>
+      
+      <!-- Tombol Install PWA -->
+      <button id="btn-install" class="btn btn-green btn-full" style="display:none; margin-top:12px; padding:14px; font-size:14px; font-weight:800; box-shadow:0 4px 15px rgba(16,185,129,0.3);" onclick="installApp()">📱 Install Aplikasi ke HP / Laptop</button>
+      
     </div>
     
     <div style="background:var(--surf-glass);backdrop-filter:blur(20px);border-radius:var(--rxl);border:1px solid var(--bdr-glass);padding:24px;box-shadow:var(--sh);margin-bottom:24px;">
@@ -784,8 +783,9 @@ tr:hover td{background:var(--surf2)}
             </div>
             
             <div style="display:flex; flex-direction:column; gap:20px;">
+                
                 <div class="card" style="margin:0;">
-                   <div class="card-t">B. Kategori Pengeluaran Toko</div>
+                   <div class="card-t">B1. Kategori Pengeluaran Toko</div>
                    <div id="set-kat-wrap" style="display:flex; flex-wrap:wrap; gap:10px; margin-bottom:16px;">
                        <!-- Injeksi JS Kategori Dinamis -->
                    </div>
@@ -794,7 +794,31 @@ tr:hover td{background:var(--surf2)}
                        <button class="btn btn-blue" onclick="tambahSetKat()">Tambah</button>
                    </div>
                 </div>
-                
+
+                <div class="card" style="margin:0;">
+                   <div class="card-t">B2. Kategori Produk / Cetakan Toko</div>
+                   <div style="font-size:11px; color:var(--tx3); margin-bottom:12px;">Kategori ini muncul saat Bapak menambah/edit Data Barang Toko.</div>
+                   <div id="set-kat-prod-wrap" style="display:flex; flex-wrap:wrap; gap:10px; margin-bottom:16px;">
+                       <!-- Injeksi JS Kategori Dinamis -->
+                   </div>
+                   <div style="display:flex; gap:12px;">
+                       <input type="text" id="set-new-kat-prod" placeholder="Ketik kategori produk baru..." style="flex:1; padding:12px 16px; border:1px solid var(--bdr); border-radius:10px; font-family:var(--fn); font-size:13px;">
+                       <button class="btn btn-blue" onclick="tambahSetKatProduk()">Tambah</button>
+                   </div>
+                </div>
+
+                <div class="card" style="margin:0;">
+                   <div class="card-t">B3. Satuan Jual Barang</div>
+                   <div style="font-size:11px; color:var(--tx3); margin-bottom:12px;">Satuan ukur (pcs, meter, rim, paket, dll) untuk Master Barang.</div>
+                   <div id="set-satuan-wrap" style="display:flex; flex-wrap:wrap; gap:10px; margin-bottom:16px;">
+                       <!-- Injeksi JS Satuan Dinamis -->
+                   </div>
+                   <div style="display:flex; gap:12px;">
+                       <input type="text" id="set-new-satuan" placeholder="Ketik satuan baru..." style="flex:1; padding:12px 16px; border:1px solid var(--bdr); border-radius:10px; font-family:var(--fn); font-size:13px;">
+                       <button class="btn btn-blue" onclick="tambahSetSatuan()">Tambah</button>
+                   </div>
+                </div>
+
                 <div class="card" style="margin:0;">
                    <div class="card-t">C. Pengaturan QRIS & Ongkir</div>
                    <div class="field"><label>Tarif Ongkos Kirim per KM (Rp)</label><input type="number" id="set-ongkir-km" placeholder="2000" style="font-family:var(--mono); font-weight:700;"></div>
@@ -860,11 +884,11 @@ tr:hover td{background:var(--surf2)}
     <div class="modal-t" id="mo-barang-title">Tambah Barang</div>
     <div class="g2">
       <div class="field"><label>Kode Barang (Singkatan)</label><input id="mb-kode" autocomplete="off" placeholder="Misal: BNR-001"></div>
-      <div class="field"><label>Nama Barang / Jasa</label><input id="mb-nama" autocomplete="off" placeholder="Misal: Banner Flexi"></div>
+      <div class="field"><label>Nama Barang / Jasa</label><input id="mb-nama" autocomplete="off" placeholder="Misal: Banner Flexi" oninput="autoKodeBarang()"></div>
     </div>
     <div class="g2">
-      <div class="field"><label>Satuan Jual</label><select id="mb-sat" style="font-weight:600;"><option>pcs</option><option>lembar</option><option>meter</option><option>roll</option><option>rim</option><option>box</option></select></div>
-      <div class="field"><label>Kategori Produk</label><select id="mb-kat" style="font-weight:600;"><option>Banner & Spanduk</option><option>Stiker & Label</option><option>Kartu & ID</option><option>Cetak Kertas</option><option>Merchandise</option><option>Lainnya</option></select></div>
+      <div class="field"><label>Satuan Jual</label><select id="mb-sat" style="font-weight:600;"><!-- Injeksi JS --></select></div>
+      <div class="field"><label>Kategori Produk</label><select id="mb-kat" style="font-weight:600;"><!-- Injeksi JS --></select></div>
     </div>
     
     <div class="field" id="mb-stok-wrap" style="display:none; background:var(--blue-l); padding:12px; border-radius:10px; border:1px solid rgba(59,130,246,0.3);"><label style="color:var(--blue-d)">Stok Saat Ini Gudang (Fisik)</label><input id="mb-stok" type="number" placeholder="0" style="font-weight:800; font-size:16px; font-family:var(--mono); border-color:var(--blue);"></div>
@@ -1068,12 +1092,21 @@ var TOKO = JSON.parse(localStorage.getItem('abunawas_toko')) || {
       {bank: 'BRI', no: '19382992013213', an: 'a.n ABUNAWAS PERCETAKAN'}
   ],
   kategoriPengeluaran: ['Operasional Toko', 'Listrik & Air', 'Gaji Karyawan', 'Lain-lain'],
+  kategoriProduk: ['Banner & Spanduk', 'Stiker & Label', 'Kartu & ID', 'Cetak Kertas', 'Merchandise', 'Lainnya'],
+  satuanJual: ['pcs', 'lembar', 'meter', 'roll', 'rim', 'box'],
   useStok: false,
   ongkirKm: 2000,
   qrisImg: 'qris.png',
   qrisLink: 'https://plenoskasir.github.io/Database-Percetakan-Abunawas/qris.png',
   theme: 'light'
 };
+
+if(!TOKO.kategoriProduk) {
+    TOKO.kategoriProduk = ['Banner & Spanduk', 'Stiker & Label', 'Kartu & ID', 'Cetak Kertas', 'Merchandise', 'Lainnya'];
+}
+if(!TOKO.satuanJual) {
+    TOKO.satuanJual = ['pcs', 'lembar', 'meter', 'roll', 'rim', 'box'];
+}
 
 var PELANGGAN = JSON.parse(localStorage.getItem('abunawas_pel')) || [
   {nama: 'Budi Santoso', wa: '081234567890', alamat: 'Jl. Merdeka No. 1, Kepanjen', id_cust: '081234567890'}
@@ -1211,7 +1244,7 @@ var ICOS={
   chart:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>',
   users:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>',
   shield:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>',
-  gear: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>'
+  gear: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1 0-2.83 2 2 0 0 1 0 2.83l.06.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>'
 };
 
 var curUser = null, editBrgIdx = -1;
@@ -1393,23 +1426,44 @@ async function waReminderAI(wa, nama, sisaTagihan) {
   } catch (err) { console.error(err); toast("Gagal menghubungi AI.", 3000); }
 }
 
-/* ════════════════ FUNGSI KATALOG PUBLIK ════════════════ */
+/* ════════════════ FUNGSI KATALOG PUBLIK (TEKS / TABEL) ════════════════ */
 function showKatalog() { document.getElementById('pg-login').style.display = 'none'; document.getElementById('pg-katalog').style.display = 'block'; renderKatalog(); }
 function closeKatalog() { document.getElementById('pg-katalog').style.display = 'none'; document.getElementById('pg-login').style.display = 'flex'; }
 function renderKatalog() {
   let wrap = document.getElementById('katalog-content');
-  if (BARANG.length === 0) { wrap.innerHTML = '<div style="text-align:center; color:var(--tx3); padding:40px;">Data katalog masih kosong.</div>'; return; }
-  let cats = {}; BARANG.forEach(b => { if(!cats[b.kat]) cats[b.kat] = []; cats[b.kat].push(b); });
+  if (BARANG.length === 0) { wrap.innerHTML = '<div style="text-align:center; color:var(--tx3); padding:40px; font-size:14px; font-weight:600;">Data pricelist masih kosong.</div>'; return; }
+  
+  let cats = {}; 
+  BARANG.forEach(b => { if(!cats[b.kat]) cats[b.kat] = []; cats[b.kat].push(b); });
+  
   let html = '';
   for (let c in cats) {
-    html += `<div style="font-size:16px; font-weight:800; color:var(--tx); margin-top:32px; margin-bottom:16px; border-bottom:2px solid var(--blue); padding-bottom:8px; display:inline-block;">${c}</div><div class="g3">`;
+    html += `
+      <div style="margin-top:40px; margin-bottom:20px; text-align:left;">
+        <h2 style="font-size:22px; font-weight:900; color:var(--tx); display:inline-block; border-bottom:3px solid var(--blue); padding-bottom:8px; margin-bottom:20px;">${c}</h2>
+        <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(300px, 1fr)); gap:20px;">
+    `;
     cats[c].forEach(b => {
        let tierHtml = b.tiers.map((t, idx) => {
-          let prev = idx > 0 ? b.tiers[idx-1].max + 1 : 1; let qtyLabel = t.max === 9999 ? (prev === 1 ? 'Harga Normal' : `≥ ${prev}`) : `${prev} - ${t.max}`;
-          return `<div style="display:flex; justify-content:space-between; font-size:12px; padding:6px 0; border-bottom:1px dashed var(--bdr);"><span style="color:var(--tx2)">Qty ${qtyLabel} ${b.satuan}</span><span style="font-weight:700; color:var(--blue)">${fmtRp(t.h)}</span></div>`;
+          let prev = idx > 0 ? b.tiers[idx-1].max + 1 : 1; 
+          let qtyLabel = t.max === 9999 ? `Qty ≥ ${prev} ${b.satuan}` : `Qty ${prev} - ${t.max} ${b.satuan}`;
+          let btmBorder = idx === b.tiers.length - 1 ? 'none' : '1px dashed var(--bdr)';
+          return `<div style="display:flex; justify-content:space-between; font-size:14px; padding:12px 0; border-bottom:${btmBorder};">
+                    <span style="color:var(--tx2); font-weight:600;">${qtyLabel}</span>
+                    <span style="font-weight:800; color:var(--blue-d); font-size:15px;">${fmtRp(t.h)}</span>
+                  </div>`;
        }).join('');
-       html += `<div class="card" style="margin-bottom:0; box-shadow:0 4px 6px -1px rgba(0,0,0,.05);"><div style="font-weight:800; font-size:15px; margin-bottom:4px; color:var(--tx);">${b.nama}</div><div style="font-size:11px; color:var(--tx3); font-family:var(--mono); margin-bottom:16px; padding-bottom:12px; border-bottom:1px solid var(--bdr);">Kode: ${b.kode}</div>${tierHtml}</div>`;
-    }); html += `</div>`;
+       html += `
+          <div style="background:var(--surf); border-radius:16px; padding:24px; box-shadow:0 4px 15px rgba(0,0,0,0.03); border:1px solid var(--bdr); text-align:left;">
+            <div style="margin-bottom:12px; padding-bottom:16px; border-bottom:1px solid var(--bdr);">
+                <div style="font-weight:900; font-size:18px; color:var(--tx); margin-bottom:6px;">${b.nama}</div>
+                <div style="font-size:13px; color:var(--tx3); font-family:var(--mono); font-weight:800;">Kode: ${b.kode}</div>
+            </div>
+            <div>${tierHtml}</div>
+          </div>
+       `;
+    }); 
+    html += `</div></div>`;
   }
   wrap.innerHTML = html;
 }
@@ -1431,7 +1485,7 @@ function setupApp(){
   document.getElementById('t-name').textContent = u.nama; document.getElementById('t-role').textContent = u.role==='boss'?'Owner / Boss':u.role==='admin'?'Admin':'Kasir Depan';
   buildSidebar(u.role); var m=MENUS[u.role]||[]; var first=m.find(function(i){return i.id;}); if(first) showPage(first.id);
   
-  populateFiBrg(); populateFiVnd(); renderCart();
+  populateFiBrg(); populateFiVnd(); renderCart(); populateKategoriProduk(); populateSatuanJual();
   var shUrl = localStorage.getItem('abunawas_sheet_url'); if(shUrl) document.getElementById('setting-sheet-url').value = shUrl;
   populateKomisiPegawai();
 }
@@ -1541,6 +1595,8 @@ function renderSetting() {
     
     renderSetRek();
     renderSetKat();
+    renderSetKatProduk();
+    renderSetSatuan();
 }
 
 function renderSetRek() {
@@ -1575,6 +1631,48 @@ function tambahSetKat() {
 }
 function delSetKat(i) { TOKO.kategoriPengeluaran.splice(i,1); renderSetKat(); }
 
+function renderSetKatProduk() {
+    let html = (TOKO.kategoriProduk||[]).map((k, i) => `
+        <span style="display:inline-flex; align-items:center; gap:6px; padding:6px 12px; background:var(--surf2); border:1px solid var(--bdr); border-radius:99px; font-size:12px; font-weight:600;">
+            ${k} <button style="background:transparent; border:none; color:var(--red); cursor:pointer; font-weight:800;" onclick="delSetKatProduk(${i})">✕</button>
+        </span>
+    `).join('');
+    document.getElementById('set-kat-prod-wrap').innerHTML = html;
+}
+function tambahSetKatProduk() {
+    let inp = document.getElementById('set-new-kat-prod'); let val = inp.value.trim();
+    if(val && !TOKO.kategoriProduk.includes(val)) { TOKO.kategoriProduk.push(val); inp.value=''; renderSetKatProduk(); }
+}
+function delSetKatProduk(i) { TOKO.kategoriProduk.splice(i,1); renderSetKatProduk(); }
+
+function renderSetSatuan() {
+    let html = (TOKO.satuanJual||[]).map((k, i) => `
+        <span style="display:inline-flex; align-items:center; gap:6px; padding:6px 12px; background:var(--surf2); border:1px solid var(--bdr); border-radius:99px; font-size:12px; font-weight:600;">
+            ${k} <button style="background:transparent; border:none; color:var(--red); cursor:pointer; font-weight:800;" onclick="delSetSatuan(${i})">✕</button>
+        </span>
+    `).join('');
+    document.getElementById('set-satuan-wrap').innerHTML = html;
+}
+function tambahSetSatuan() {
+    let inp = document.getElementById('set-new-satuan'); let val = inp.value.trim();
+    if(val && !TOKO.satuanJual.includes(val)) { TOKO.satuanJual.push(val); inp.value=''; renderSetSatuan(); }
+}
+function delSetSatuan(i) { TOKO.satuanJual.splice(i,1); renderSetSatuan(); }
+
+function populateKategoriProduk() {
+    let el = document.getElementById('mb-kat');
+    if(el) {
+        el.innerHTML = (TOKO.kategoriProduk||[]).map(k => `<option value="${k}">${k}</option>`).join('');
+    }
+}
+
+function populateSatuanJual() {
+    let el = document.getElementById('mb-sat');
+    if(el) {
+        el.innerHTML = (TOKO.satuanJual||[]).map(k => `<option value="${k}">${k}</option>`).join('');
+    }
+}
+
 function simpanSetting() {
     // Save rekening
     let newRek = [];
@@ -1586,6 +1684,7 @@ function simpanSetting() {
     }
     TOKO.rekening = newRek;
     TOKO.ongkirKm = parseInt(document.getElementById('set-ongkir-km').value) || 2000;
+    
     let rawQrisImg = document.getElementById('set-qris-img').value.trim();
     if(rawQrisImg.includes('drive.google.com/file/d/')) {
        let match = rawQrisImg.match(/\/d\/(.+?)\//);
@@ -1593,9 +1692,14 @@ function simpanSetting() {
     }
     TOKO.qrisImg = rawQrisImg;
     TOKO.qrisLink = document.getElementById('set-qris-link').value.trim();
+    
     TOKO.useStok = document.getElementById('set-use-stok').checked;
     
-    saveData(); renderSetting(); toast('✔️ Pengaturan Toko berhasil disimpan!', 2500);
+    saveData(); 
+    renderSetting(); 
+    populateKategoriProduk();
+    populateSatuanJual();
+    toast('✔️ Pengaturan Toko berhasil disimpan!', 2500);
 }
 
 /* ════════════════ DASHBOARD KHUSUS BOSS ════════════════ */
@@ -2146,6 +2250,30 @@ function openModalBarang(){editBrgIdx=-1;document.getElementById('mo-barang-titl
 function editBrg(i){editBrgIdx=i;var b=BARANG[i];document.getElementById('mo-barang-title').textContent='Edit: '+b.nama;document.getElementById('mb-kode').value=b.kode;document.getElementById('mb-nama').value=b.nama;document.getElementById('mb-sat').value=b.satuan;document.getElementById('mb-kat').value=b.kat;document.getElementById('mb-modal').value=b.modal; document.getElementById('mb-stok').value=b.stok||0; resetTierEditor(b.tiers);openModal('mo-barang');}
 function hapusBrg(i){if(confirm('Yakin menghapus '+BARANG[i].nama+'?')){BARANG.splice(i,1); saveData(); renderBrg();toast('Barang terhapus.');}}
 
+function autoKodeBarang() {
+  if (editBrgIdx >= 0) return; // Jangan ubah otomatis kalau sedang mode edit
+  let nama = document.getElementById('mb-nama').value.trim().toUpperCase();
+  let elKode = document.getElementById('mb-kode');
+  
+  if (nama.length >= 3) {
+      // Ambil 3 huruf pertama dari abjad saja
+      let prefix = nama.replace(/[^A-Z]/g, '').substring(0, 3);
+      if (prefix.length < 3) prefix = prefix.padEnd(3, 'X');
+      
+      // Cari angka terbesar dari prefix yang sama agar tidak bentrok
+      let maxNum = 0;
+      BARANG.forEach(b => {
+          if (b.kode.startsWith(prefix)) {
+              let numPart = parseInt(b.kode.split('-')[1]);
+              if (!isNaN(numPart) && numPart > maxNum) maxNum = numPart;
+          }
+      });
+      elKode.value = prefix + '-' + String(maxNum + 1).padStart(3, '0');
+  } else if (nama.length === 0) {
+      elKode.value = '';
+  }
+}
+
 function resetTierEditor(tiers){document.getElementById('tier-rows').innerHTML='';tiers.forEach(function(t,i){addTierRowFill(t.max===9999?'':t.max,t.h,i===tiers.length-1);});}
 function addTierRow(){addTierRowFill('','',true);}
 function addTierRowFill(maxV,hV,isLast){
@@ -2466,6 +2594,37 @@ function kirimPDF() {
 /* ════════════════ EXPORT BACKUP JSON & CSV ════════════════ */
 function backupJSON(){var b=new Blob([localStorage.getItem('abunawas_trx')],{type:'application/json'});var a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='Database-PrintKasir-'+nowDate()+'.json';a.click();}
 function backupCSV(){var h='ID,Tanggal,Pelanggan,WA,Alamat,Item_Pesanan,Total_Harga,Dibayar,Sisa,Status_Bayar,Metode_Bayar,Nama_Kasir\n';var r=TRX.map(function(t){let trxItems = t.items || [{barang: t.barang, qty: t.qty}]; let itemStr = trxItems.map(i => i.barang + ' x' + i.qty).join(' | '); return[t.id,t.tgl,t.pelanggan,t.wa,t.alamat||'-',itemStr,t.total,t.dibayar,t.sisa,t.bayar,t.metode||'Cash',t.kasir].join(',');}).join('\n');var b=new Blob([h+r],{type:'text/csv'});var a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='Laporan-Transaksi-'+nowDate()+'.csv';a.click();}
+
+/* ════════════════ PWA & INSTALL APP ════════════════ */
+let deferredPrompt;
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  // Munculkan tombol install jika aplikasi belum diinstall
+  const installBtn = document.getElementById('btn-install');
+  if(installBtn) installBtn.style.display = 'block';
+});
+
+function installApp() {
+  if (deferredPrompt) {
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then((choiceResult) => {
+      if (choiceResult.outcome === 'accepted') {
+        console.log('Aplikasi berhasil diinstall');
+      }
+      deferredPrompt = null;
+      document.getElementById('btn-install').style.display = 'none';
+    });
+  }
+}
+
+// Register Service Worker untuk dukungan Install PWA
+if ('serviceWorker' in navigator) {
+  // Menggunakan file eksternal 'sw.js' untuk menghindari error blob protocol
+  navigator.serviceWorker.register('sw.js').catch(function(err) {
+      console.log('Catatan PWA: Untuk mengaktifkan fitur Install Aplikasi, buat file sw.js di GitHub Anda yang berisi: self.addEventListener("fetch", function(e) { });');
+  });
+}
 
 /* ════ INIT DEFAULT LOGIN SCREEN ════ */
 document.getElementById('inp-u').value=''; document.getElementById('inp-p').value='';
