@@ -395,6 +395,15 @@ tr:hover td{background:var(--surf2)}
         <div class="card"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px"><div class="card-t" style="margin:0">Transaksi Terbaru</div></div><div class="tbl-wrap" id="d-trx"></div></div>
       </div>
 
+      <!-- DASHBOARD ADMIN -->
+      <div class="page" id="pg-dash-admin">
+        <div class="ph">
+          <div><div class="pt">Dashboard Admin</div><div class="ps">Ringkasan cepat operasional toko hari ini.</div></div>
+        </div>
+        <div class="g2" id="da-stats" style="margin-bottom:32px"></div>
+        <div class="card"><div class="card-t">10 Transaksi Terakhir</div><div class="tbl-wrap" id="da-trx"></div></div>
+      </div>
+
       <!-- INPUT TRANSAKSI POS MURNI (SEMUA ROLE) -->
       <div class="page" id="pg-input">
         <div class="ph">
@@ -2255,7 +2264,7 @@ function renderBrg(){
   populateFiBrg();
 }
 function openModalBarang(){editBrgIdx=-1;document.getElementById('mo-barang-title').textContent='Tambah Barang';document.getElementById('mb-kode').value='';document.getElementById('mb-nama').value='';document.getElementById('mb-sat').value='';document.getElementById('mb-kat').value='';document.getElementById('mb-modal').value=''; document.getElementById('mb-stok').value=''; resetTierEditor([{max:10,h:25000},{max:9999,h:20000}]);openModal('mo-barang');}
-function editBrg(i){editBrgIdx=i;var b=BARANG[i];document.getElementById('mo-barang-title').textContent='Edit: '+b.nama;document.getElementById('mb-kode').value=b.kode;document.getElementById('mb-nama').value=b.nama;document.getElementById('mb-sat').value=b.satuan;document.getElementById('mb-kat').value=b.kat;document.getElementById('mb-modal').value=b.modal; document.getElementById('mb-stok').value=b.stok||0; resetTierEditor(b.tiers);openModal('mo-barang');}
+function editBrg(i){editBrgIdx=i;var b=BARANG[i];document.getElementById('mo-barang-title').textContent='Edit: '+b.nama;document.getElementById('mb-kode').value=b.kode;document.getElementById('mb-nama').value=b.nama;document.getElementById('mb-sat').value=b.satuan;document.getElementById('mb-kat').value=b.kat;document.getElementById('mb-modal').value=formatRibuan(b.modal); document.getElementById('mb-stok').value=b.stok||0; resetTierEditor(b.tiers);openModal('mo-barang');}
 function hapusBrg(i){if(confirm('Yakin menghapus '+BARANG[i].nama+'?')){BARANG.splice(i,1); saveData(); renderBrg();toast('Barang terhapus.');}}
 
 function autoKodeBarang() {
@@ -2329,7 +2338,7 @@ function simpanBarang(){
   var nama=document.getElementById('mb-nama').value.trim(); 
   var sat=document.getElementById('mb-sat').value.trim() || 'pcs'; 
   var kat=document.getElementById('mb-kat').value.trim() || 'Lainnya'; 
-  var modal=parseInt(document.getElementById('mb-modal').value)||0; 
+  var modal=cleanRibuan(document.getElementById('mb-modal').value)||0; 
   var stok=parseInt(document.getElementById('mb-stok').value)||0;
   
   if(!kode||!nama){alert('Kode dan nama produk wajib diisi!');return;}
