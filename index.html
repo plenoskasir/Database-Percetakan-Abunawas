@@ -123,10 +123,15 @@ body{font-family:var(--fn);background:var(--bg);color:var(--tx);font-size:13px;m
 .radio-lbl.r-dp { color: var(--amber-d); border-color: var(--amber); background: var(--amber-l); }
 .radio-lbl.r-lunas { color: var(--green-d); border-color: var(--green); background: var(--green-l); }
 
+/* Grid Responsif Standar */
 .g2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
 .g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
 .g4{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
 .g5{display:grid;grid-template-columns:repeat(5,1fr);gap:16px}
+
+/* 🔥 LAYOUT BARU: Responsif Form vs Tabel (Kiri lebih kecil, Kanan lebar) */
+.layout-aside { display: grid; grid-template-columns: 350px 1fr; gap: 20px; align-items: start; }
+.layout-pos { display: grid; grid-template-columns: 1.6fr 1fr; gap: 20px; align-items: start; }
 
 table{width:100%;border-collapse:collapse;font-size:13px}
 th{padding:12px 16px;background:var(--surf2);color:var(--tx2);font-weight:800;font-size:11px;letter-spacing:.5px;text-transform:uppercase;text-align:left;white-space:nowrap;border-bottom:1px solid var(--bdr)}
@@ -227,8 +232,11 @@ tr:hover td{background:var(--surf2)}
 .sidebar-overlay { display:none; position:fixed; top:70px; left:0; right:0; bottom:0; background:rgba(0,0,0,0.5); z-index:90; backdrop-filter:blur(4px); }
 .sidebar-overlay.on { display:block; }
 
-@media(max-width:768px){
+/* 🔥 Aturan Khusus Layar Sempit (Tablet & HP) */
+@media(max-width:900px){
   .g2,.g3,.g4,.g5 { grid-template-columns:1fr; gap:16px;}
+  .layout-aside, .layout-pos { grid-template-columns: 1fr; } /* Otomatis Atas Bawah pada HP */
+  
   .btn-menu-mobile { display:block; }
   .sidebar { position:fixed; top:70px; left:-280px; width:280px; height:calc(100vh - 70px); z-index:100; transition:left 0.3s cubic-bezier(0.4, 0, 0.2, 1); box-shadow:var(--sh-lg); display:flex !important; flex-direction:column; }
   .sidebar.on { left:0; }
@@ -407,8 +415,11 @@ tr:hover td{background:var(--surf2)}
       <!-- INPUT TRANSAKSI POS MURNI (SEMUA ROLE) -->
       <div class="page" id="pg-input">
         <div class="ph">
-          <div><div class="pt">POS Transaksi Kasir</div><div class="ps">Sistem input cepat layaknya kasir swalayan.</div></div>
-          <button class="btn btn-ghost" onclick="syncToSheets()" style="background:var(--green-l); color:var(--green-d); border-color:var(--green);"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:6px"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.92-10.44l5.66 5.66"/></svg> <span id="btn-sync-kasir">Sync Data ke Excel</span></button>
+          <div><div class="pt" id="pos-title">POS Transaksi Kasir</div><div class="ps">Sistem input cepat layaknya kasir swalayan.</div></div>
+          <div style="display:flex; gap:10px;">
+             <button class="btn btn-red" id="btn-batal-edit-trx" style="display:none;" onclick="batalEditTrx()">✕ Batal Edit</button>
+             <button class="btn btn-ghost" onclick="syncToSheets()" style="background:var(--green-l); color:var(--green-d); border-color:var(--green);"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:6px"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.92-10.44l5.66 5.66"/></svg> <span id="btn-sync-kasir">Sync Data ke Excel</span></button>
+          </div>
         </div>
 
         <div class="card ai-card" style="margin-bottom:20px;">
@@ -418,18 +429,18 @@ tr:hover td{background:var(--surf2)}
           <button class="btn btn-ai" id="ai-btn-extract" style="width:220px; padding:12px; font-size:14px;" onclick="prosesAIPesanan()">✨ Ekstrak Pesanan</button>
         </div>
 
-        <div class="g2" style="align-items:start">
+        <div class="layout-pos">
           <div style="display:flex;flex-direction:column;gap:20px">
             <div class="card" style="margin:0">
               <div class="card-t">Data Pelanggan</div>
               <div class="field"><label>ID Pelanggan (Otomatis)</label>
-                  <input type="text" id="fi-id-cust" class="auto" readonly placeholder="Terisi Otomatis (UMUM / Nomor WA)" style="background:var(--surf2); color:var(--tx3); font-size:12px;">
+                  <input type="text" id="fi-id-cust" class="auto" readonly placeholder="Terisi Otomatis (UMUM / PLG-0001)" style="background:var(--surf2); color:var(--tx3); font-size:12px;">
               </div>
               <div class="g2">
                   <div class="field"><label>Nama Pelanggan</label><input type="text" id="fi-nama" autocomplete="off" placeholder="Ketik nama (Kosongkan = UMUM)" list="fi-pel-list" oninput="autoPelanggan()">
                     <datalist id="fi-pel-list"></datalist>
                   </div>
-                  <div class="field"><label>No. WhatsApp</label><input type="text" id="fi-wa" autocomplete="off" placeholder="08xxxxxxxxxx" oninput="updateIdCust()"></div>
+                  <div class="field"><label>No. WhatsApp</label><input type="text" id="fi-wa" autocomplete="off" placeholder="08xxxxxxxxxx"></div>
               </div>
               <div class="field" style="margin:0"><label>Alamat Lengkap</label><textarea id="fi-alamat" rows="2" placeholder="Jalan, RT/RW, Desa/Kelurahan... (Opsional)" autocomplete="off"></textarea></div>
             </div>
@@ -459,7 +470,7 @@ tr:hover td{background:var(--surf2)}
 
               <div class="field"><label>Total Keseluruhan (Termasuk Ongkir & Diskon)</label><input type="text" id="fi-total" class="auto" readonly placeholder="Rp 0" style="font-size:22px;font-weight:900;color:var(--blue-d); text-align:right;"></div>
 
-              <!-- Komisi -->
+              <!-- Komisi & Antrean -->
               <div class="g2" style="margin-top:20px; background:var(--green-l); padding:16px; border-radius:12px; border:1px solid rgba(16,185,129,0.3);">
                 <div class="field" style="margin:0"><label style="color:var(--green-d)">Dikerjakan Oleh (Karyawan)</label>
                   <select id="fi-komisi-pegawai" style="font-family:var(--fn); border-color:var(--green);">
@@ -471,7 +482,10 @@ tr:hover td{background:var(--surf2)}
                 </div>
               </div>
 
-              <div class="field" style="margin-top:20px"><label>Catatan Keseluruhan (Opsional)</label><input type="text" id="fi-catatan" autocomplete="off" placeholder="Contoh: Ambil hari senin sore..."></div>
+              <div class="g2" style="margin-top:20px;">
+                  <div class="field" style="margin:0"><label>No. Antrean / Cetakan</label><input type="text" id="fi-no-cetak" autocomplete="off" placeholder="Misal: 001" style="font-size:16px; font-weight:800; font-family:var(--mono); color:var(--tx); border-color:var(--blue);"></div>
+                  <div class="field" style="margin:0"><label>Catatan (Opsional)</label><input type="text" id="fi-catatan" autocomplete="off" placeholder="Contoh: Ambil hari senin sore..."></div>
+              </div>
             </div>
           </div>
           
@@ -530,7 +544,7 @@ tr:hover td{background:var(--surf2)}
 
       <!-- TRANSAKSI -->
       <div class="page" id="pg-transaksi">
-        <div class="ph"><div class="pt">Semua Transaksi</div><button class="btn btn-blue" onclick="showPage('input')">+ Transaksi Baru</button></div>
+        <div class="ph"><div class="pt">Semua Transaksi</div><button class="btn btn-blue" onclick="batalEditTrx(); showPage('input')">+ Transaksi Baru</button></div>
         <div class="card">
           <div style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap">
             <input type="text" id="trx-q" oninput="renderTrx()" placeholder="Cari ID, Nomor WA, atau nama pelanggan..." style="flex:1;min-width:180px;padding:12px 16px;border:1px solid var(--bdr);border-radius:10px;font-size:13px;font-family:var(--fn);outline:none">
@@ -552,7 +566,7 @@ tr:hover td{background:var(--surf2)}
         <div class="ph">
           <div><div class="pt">Setoran & Laci Kasir</div><div class="ps">Perhitungan uang fisik (CASH) di laci toko untuk hari ini.</div></div>
         </div>
-        <div class="g2" style="align-items:start">
+        <div class="layout-aside">
             <div class="card">
                 <div class="card-t">Modal Awal Laci Pagi Ini</div>
                 <div class="field"><label>Jumlah Modal Laci (Uang Kembalian)</label>
@@ -589,7 +603,7 @@ tr:hover td{background:var(--surf2)}
           <div><div class="pt">Kasbon Karyawan</div><div class="ps">Catat pinjaman uang karyawan (Otomatis potong laci kasir).</div></div>
         </div>
         
-        <div class="g2" style="align-items:start">
+        <div class="layout-aside">
             <div class="card">
                 <div class="card-t">Input Kasbon Baru</div>
                 <div class="field"><label>Pilih Pegawai</label>
@@ -622,7 +636,7 @@ tr:hover td{background:var(--surf2)}
           <div><div class="pt">Belanja Vendor & Pengeluaran</div><div class="ps">Catat maklon bahan ke vendor luar & pengeluaran operasional.</div></div>
         </div>
 
-        <div class="g2" style="align-items:start">
+        <div class="layout-aside">
           <div style="display:flex;flex-direction:column;gap:20px">
             
             <!-- Keranjang Vendor -->
@@ -721,7 +735,7 @@ tr:hover td{background:var(--surf2)}
       <!-- DATA PELANGGAN -->
       <div class="page" id="pg-pelanggan">
         <div class="ph">
-          <div><div class="pt">Data Master Pelanggan</div><div class="ps">Database kontak customer Anda (Nomor WA otomatis jadi ID Customer)</div></div>
+          <div><div class="pt">Data Master Pelanggan</div><div class="ps">Database kontak customer Anda</div></div>
           <button class="btn btn-blue" onclick="openModalPelanggan()">+ Tambah Pelanggan</button>
         </div>
         <div class="card"><div class="tbl-wrap" id="pel-tbl"></div></div>
@@ -781,7 +795,7 @@ tr:hover td{background:var(--surf2)}
       <div class="page" id="pg-setting">
         <div class="ph"><div class="pt">Pengaturan Toko</div><div class="ps">Ubah nomor rekening dinamis, kategori pengeluaran, dan sistem stok.</div></div>
         
-        <div class="g2" style="align-items:start">
+        <div class="layout-aside">
             <div class="card">
                <div class="card-t">A. Daftar Rekening Bank & E-Wallet</div>
                <div style="font-size:12px; color:var(--tx3); margin-bottom:16px;">Rekening ini akan otomatis tercetak di Struk PDF Pelanggan.</div>
@@ -949,7 +963,7 @@ tr:hover td{background:var(--surf2)}
   <div class="modal">
     <div class="modal-t" id="mo-pelanggan-title">Tambah Pelanggan</div>
     <div class="field"><label>Nama Pelanggan</label><input id="mp-nama" autocomplete="off" placeholder="Nama pelanggan / Instansi"></div>
-    <div class="field"><label>No. WhatsApp (Menjadi ID Customer)</label><input id="mp-wa" autocomplete="off" placeholder="08xxxxxxxxxx" style="font-weight:700; font-family:var(--mono);"></div>
+    <div class="field"><label>No. WhatsApp (Opsional)</label><input id="mp-wa" autocomplete="off" placeholder="08xxxxxxxxxx" style="font-weight:700; font-family:var(--mono);"></div>
     <div class="field"><label>Alamat Lengkap</label><textarea id="mp-alamat" rows="2" placeholder="Jalan, RT/RW, Desa/Kelurahan... (Opsional)"></textarea></div>
     <div class="modal-acts">
       <button class="btn btn-ghost" style="flex:1; padding:14px;" onclick="closeModal('mo-pelanggan')">Batal</button>
@@ -1065,6 +1079,7 @@ const apiKey = "";
 /* ════════════════ VARIABEL GLOBAL ════════════════ */
 var CART = [];
 var CART_VND = []; // Keranjang Vendor
+var currentEditTrxId = null;
 
 function dMinus(d){ var date = new Date(); date.setDate(date.getDate() - d); return date.toISOString().split('T')[0]; }
 function nowDate(){return new Date().toISOString().split('T')[0];}
@@ -1126,7 +1141,7 @@ if(!TOKO.satuanJual) {
 }
 
 var PELANGGAN = JSON.parse(localStorage.getItem('abunawas_pel')) || [
-  {nama: 'Budi Santoso', wa: '081234567890', alamat: 'Jl. Merdeka No. 1, Kepanjen', id_cust: '081234567890'}
+  {nama: 'Budi Santoso', wa: '081234567890', alamat: 'Jl. Merdeka No. 1, Kepanjen', id_cust: 'PLG-0001'}
 ];
 
 var VENDORS = JSON.parse(localStorage.getItem('abunawas_vnd')) || [
@@ -1144,7 +1159,7 @@ var BARANG_VENDOR = JSON.parse(localStorage.getItem('abunawas_brgvnd')) || [
 ];
 
 var TRX = JSON.parse(localStorage.getItem('abunawas_trx')) || [
-  {id:'INV-2026-04-001',tgl:dMinus(0),pelanggan:'Budi Santoso',wa:'081234567890', id_cust:'081234567890', alamat:'Jl. Merdeka No. 1, Kepanjen', items:[{kode:'BNR-001',barang:'Banner Flexi',qty:4,harga:25000,total:100000,modal:48000}], total:100000,modal:48000,dibayar:100000,sisa:0,bayar:'Lunas',metode:'Cash',kasir:'Andi Pratama',catatan:'Cetak Highres', diskon:0, ongkir:0, komisiNama:'', komisiNominal:0}
+  {id:'INV-2026-04-001',tgl:dMinus(0),pelanggan:'Budi Santoso',wa:'081234567890', id_cust:'PLG-0001', no_cetak:'001', alamat:'Jl. Merdeka No. 1, Kepanjen', items:[{kode:'BNR-001',barang:'Banner Flexi',qty:4,harga:25000,total:100000,modal:48000}], total:100000,modal:48000,dibayar:100000,sisa:0,bayar:'Lunas',metode:'Cash',kasir:'Andi Pratama',catatan:'Cetak Highres', diskon:0, ongkir:0, komisiNama:'', komisiNominal:0}
 ];
 var trxCtr = TRX.length > 0 ? parseInt(TRX[0].id.split('-').pop()) + 1 : 1; 
 
@@ -1296,6 +1311,23 @@ function sendWA(phone, message) {
   let isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
   if (isMobile) { window.location.href = `whatsapp://send?phone=${p}&text=${msg}`; } 
   else { window.open(`https://web.whatsapp.com/send?phone=${p}&text=${msg}`, 'PrintKasirWA'); }
+}
+
+/* ════════════════ FUNGSI GENERATE ID & NOMOR CETAK ════════════════ */
+function generateCustId() {
+    let max = 0;
+    PELANGGAN.forEach(p => {
+        let numStr = (p.id_cust || '').replace(/\D/g, '');
+        let num = parseInt(numStr, 10);
+        if(!isNaN(num) && num > max) max = num;
+    });
+    return 'PLG-' + String(max + 1).padStart(4, '0');
+}
+
+function generateNoCetak() {
+    let d = nowDate();
+    let count = TRX.filter(t => t.tgl === d).length;
+    return String(count + 1).padStart(3, '0');
 }
 
 /* ════════════════ FUNGSI API GOOGLE SHEETS SYNC ════════════════ */
@@ -1527,7 +1559,14 @@ function showPage(id){
   if(mainSb && mainSb.classList.contains('on')) { mainSb.classList.remove('on'); if(ov) ov.classList.remove('on'); }
 
   var fn={
-    'dashboard':renderDash, 'input':function(){populateFiBrg(); renderCart(); document.getElementById('lbl-tarif-km').textContent = fmtRp(TOKO.ongkirKm); updateIdCust();}, 'transaksi':renderTrx, 'piutang':renderPiutang,
+    'dashboard':renderDash, 
+    'input':function(){
+        populateFiBrg(); renderCart(); 
+        document.getElementById('lbl-tarif-km').textContent = fmtRp(TOKO.ongkirKm); 
+        updateIdCust(); 
+        if(!currentEditTrxId) document.getElementById('fi-no-cetak').value = generateNoCetak();
+    }, 
+    'transaksi':renderTrx, 'piutang':renderPiutang,
     'pengeluaran':function(){populateFiVnd(); populateKategoriPengeluaran(); renderPengeluaran(); renderCartVendor();}, 'hutang-pengeluaran':renderHutangPengeluaran, 'pelanggan':renderPelanggan,
     'barang':renderBrg, 'barang-vendor':renderBrgVendor, 'laporan':renderLaporan, 'dash-admin':renderDashAdmin,
     'pegawai':renderPegawaiData, 'kasir-riwayat':renderKasirRiwayat, 'vendor':renderVendor, 'hutang-vendor':renderHutangVendor,
@@ -1576,7 +1615,7 @@ function renderKasbon() {
     
     let rows = KASBON.sort((a,b) => new Date(b.tgl) - new Date(a.tgl)).map((k, i) => {
         let delBtn = (curUser.role === 'boss') ? `<button class="btn btn-red btn-xs" onclick="hapusKasbon(${i})">Hapus</button>` : '';
-        return `<tr><td class="mono">${k.tgl}</td><td style="font-weight:700">${k.nama}</td><td>${k.ket}</td><td style="font-weight:700; color:var(--red)">${fmtRp(k.nominal)}</td><td>${delBtn}</td></tr>`;
+        return `<tr><td class="mono">${k.tgl}</td><td style="font-weight:700">${k.nama}</td><td>${k.ket}</td><td style="font-weight:700; color:var(--red)">${fmtRp(k.nominal)}</td><td><div style="display:flex; gap:6px; flex-wrap:wrap;">${delBtn}</div></td></tr>`;
     }).join('');
     document.getElementById('kasbon-tbl').innerHTML = `<table><thead><tr><th>Tanggal</th><th>Nama Pegawai</th><th>Keterangan</th><th>Nominal Ngambil (Rp)</th><th>Aksi</th></tr></thead><tbody>${rows||'<tr><td colspan="5" style="text-align:center">Belum ada data kasbon.</td></tr>'}</tbody></table>`;
 }
@@ -1769,9 +1808,10 @@ function renderDash(){
 
   var rows=fTrx.slice(0,5).map(function(t){
     let mainItem = (t.items && t.items.length > 0) ? t.items[0].barang : 'Pesanan'; let extraItems = (t.items && t.items.length > 1) ? ` +${t.items.length-1} lgi` : '';
-    return `<tr><td class="mono">${t.id}</td><td style="font-weight:600">${t.pelanggan}</td><td>${mainItem}${extraItems}</td><td style="font-weight:700;color:var(--blue)">${fmtRp(t.total)}</td><td>${badgeBayar(t.bayar)}</td><td style="font-size:11px;color:var(--tx2)">${t.kasir.split(' ')[0]}</td></tr>`;
+    let editBtn = `<button class="btn btn-amber btn-xs" onclick="editTrx('${t.id}')">Edit</button>`;
+    return `<tr><td class="mono">${t.id}</td><td style="font-weight:600">${t.pelanggan}</td><td>${mainItem}${extraItems}</td><td style="font-weight:700;color:var(--blue)">${fmtRp(t.total)}</td><td>${badgeBayar(t.bayar)}</td><td><div style="display:flex; gap:6px; flex-wrap:wrap;">${editBtn}</div></td></tr>`;
   }).join('');
-  document.getElementById('d-trx').innerHTML='<div class="tbl-wrap"><table><thead><tr><th>ID Nota</th><th>Pelanggan</th><th>Barang/Jasa</th><th>Total (Rp)</th><th>Bayar</th><th>Kasir</th></tr></thead><tbody>'+(rows||'<tr><td colspan="6" style="text-align:center;padding:24px 0;color:var(--tx3)">Belum ada transaksi di periode ini</td></tr>')+'</tbody></table></div>';
+  document.getElementById('d-trx').innerHTML='<div class="tbl-wrap"><table><thead><tr><th>ID Nota</th><th>Pelanggan</th><th>Barang/Jasa</th><th>Total (Rp)</th><th>Bayar</th><th>Aksi</th></tr></thead><tbody>'+(rows||'<tr><td colspan="6" style="text-align:center;padding:24px 0;color:var(--tx3)">Belum ada transaksi di periode ini</td></tr>')+'</tbody></table></div>';
 
   renderCharts(fTrx);
 }
@@ -1792,6 +1832,62 @@ function renderCharts(fTrx){
 }
 
 /* ════════════════ LOGIKA KERANJANG & INPUT TRANSAKSI (POS) ════════════════ */
+function editTrx(id) {
+    let t = TRX.find(x => x.id === id);
+    if(!t) return;
+    
+    currentEditTrxId = id;
+    showPage('input');
+    document.getElementById('pos-title').textContent = 'Edit Transaksi: ' + id;
+    document.getElementById('btn-batal-edit-trx').style.display = 'inline-flex';
+
+    document.getElementById('fi-nama').value = t.pelanggan !== 'Pelanggan Umum' && t.pelanggan !== 'UMUM' ? t.pelanggan : '';
+    document.getElementById('fi-wa').value = t.wa || '';
+    document.getElementById('fi-alamat').value = t.alamat || '';
+    document.getElementById('fi-id-cust').value = t.id_cust || '';
+
+    CART = JSON.parse(JSON.stringify(t.items || []));
+
+    document.getElementById('fi-diskon').value = t.diskon ? formatRibuan(t.diskon) : '';
+    document.getElementById('fi-ongkir').value = t.ongkir ? formatRibuan(t.ongkir) : '';
+    document.getElementById('fi-jarak').value = (t.ongkir && TOKO.ongkirKm) ? (t.ongkir / TOKO.ongkirKm) : '0';
+
+    document.getElementById('fi-komisi-pegawai').value = t.komisiNama || '';
+    document.getElementById('fi-komisi-nominal').value = t.komisiNominal ? formatRibuan(t.komisiNominal) : '';
+    
+    document.getElementById('fi-no-cetak').value = t.no_cetak || '';
+    document.getElementById('fi-catatan').value = t.catatan || '';
+
+    let rLunas = document.querySelector('input[name="fi_bayar"][value="Lunas"]');
+    let rDP = document.querySelector('input[name="fi_bayar"][value="DP"]');
+    let rHutang = document.querySelector('input[name="fi_bayar"][value="Hutang"]');
+
+    if(t.bayar === 'Lunas') rLunas.checked = true;
+    else if(t.bayar === 'DP') { rDP.checked = true; document.getElementById('fi-dp-val').value = formatRibuan(t.dibayar); }
+    else rHutang.checked = true;
+
+    toggleDP('fi');
+    renderCart();
+    toast('Mode Edit diaktifkan untuk ' + id, 2500);
+}
+
+function batalEditTrx() {
+    currentEditTrxId = null;
+    document.getElementById('pos-title').textContent = 'POS Transaksi Kasir';
+    document.getElementById('btn-batal-edit-trx').style.display = 'none';
+
+    document.getElementById('fi-nama').value=''; document.getElementById('fi-wa').value=''; document.getElementById('fi-alamat').value=''; document.getElementById('fi-id-cust').value='';
+    document.getElementById('fi-kode').value=''; document.getElementById('fi-qty').value='1'; 
+    document.getElementById('fi-no-cetak').value = generateNoCetak();
+    document.getElementById('fi-catatan').value=''; 
+    document.getElementById('fi-harga').value='';
+    document.getElementById('fi-jarak').value='0'; document.getElementById('fi-ongkir').value=''; document.getElementById('fi-diskon').value='';
+    document.getElementById('fi-komisi-pegawai').value=''; document.getElementById('fi-komisi-nominal').value='';
+    document.querySelector('input[name="fi_bayar"][value="Lunas"]').checked = true; toggleDP('fi');
+
+    CART = []; renderCart(); updateIdCust();
+}
+
 function populateFiBrg(){
   var dl = document.getElementById('fi-brg-list');
   if(dl) dl.innerHTML=BARANG.map(b => `<option value="${b.kode} - ${b.nama}">`).join('');
@@ -1820,16 +1916,13 @@ function autoPelanggan() {
 
 function updateIdCust() {
   let nama = document.getElementById('fi-nama').value.trim();
-  let wa = document.getElementById('fi-wa').value.trim();
   let el = document.getElementById('fi-id-cust');
-  if(wa) {
-      el.value = wa;
-  } else if (!nama || nama.toLowerCase() === 'pelanggan umum') {
+  if (!nama || nama.toLowerCase() === 'pelanggan umum') {
       el.value = 'UMUM';
   } else {
       let pel = PELANGGAN.find(p => p.nama.toLowerCase() === nama.toLowerCase());
       if (pel && pel.id_cust) el.value = pel.id_cust;
-      else el.value = 'CUST-' + String(PELANGGAN.length+1).padStart(3,'0');
+      else el.value = generateCustId();
   }
 }
 
@@ -1850,7 +1943,7 @@ function tambahKeKeranjang() {
   let kode = kodeVal.split(' ')[0].toUpperCase();
   let b = BARANG.find(x => x.kode === kode || x.nama.toLowerCase() === kodeVal.toLowerCase());
   
-  if (TOKO.useStok && b) {
+  if (TOKO.useStok && b && !currentEditTrxId) {
       if ((b.stok || 0) < qty) {
           if(!confirm(`⚠️ Warning Stok: Stok fisik "${b.nama}" saat ini hanya ${b.stok||0}. Lanjutkan tambah ke keranjang?`)) return;
       }
@@ -1937,6 +2030,8 @@ function simpanTrxPage(actionType = 'nota'){
   var wa=document.getElementById('fi-wa').value.trim(); var alamat=document.getElementById('fi-alamat').value.trim();
   var idCust=document.getElementById('fi-id-cust').value.trim();
   var bayar=document.querySelector('input[name="fi_bayar"]:checked').value; var dpVal=cleanRibuan(document.getElementById('fi-dp-val').value);
+  
+  var noCetak=document.getElementById('fi-no-cetak').value.trim();
   var catatan=document.getElementById('fi-catatan').value.trim();
   
   var komisiNama = document.getElementById('fi-komisi-pegawai').value || '';
@@ -1949,36 +2044,57 @@ function simpanTrxPage(actionType = 'nota'){
   var total = subtotal - diskon + ongkir; if(total < 0) total = 0;
   
   var dibayar = (bayar === 'Lunas') ? total : ((bayar === 'DP') ? dpVal : 0);
-  var sisa = total - dibayar; var id=nowId();
+  var sisa = total - dibayar; 
+  var id = currentEditTrxId ? currentEditTrxId : nowId();
   
-  if(nama !== 'Pelanggan Umum') {
+  if(nama !== 'Pelanggan Umum' && nama !== 'UMUM') {
       let existPel = PELANGGAN.find(p => p.nama.toLowerCase() === nama.toLowerCase());
-      if(!existPel) { PELANGGAN.push({nama: nama, wa: wa, alamat: alamat, id_cust: idCust}); if(document.getElementById('pg-pelanggan').classList.contains('on')) renderPelanggan();
-      } else { if(wa) existPel.wa = wa; if(alamat) existPel.alamat = alamat; if(idCust) existPel.id_cust = idCust; }
+      if(!existPel) { 
+          let newId = generateCustId();
+          if(!idCust || idCust === 'UMUM') idCust = newId;
+          PELANGGAN.push({nama: nama, wa: wa, alamat: alamat, id_cust: idCust}); 
+          if(document.getElementById('pg-pelanggan').classList.contains('on')) renderPelanggan();
+      } else { 
+          if(wa) existPel.wa = wa; 
+          if(alamat) existPel.alamat = alamat; 
+          if(idCust && idCust !== 'UMUM') existPel.id_cust = idCust; 
+      }
   }
 
-  // Pengurangan Stok (Opsional)
-  if (TOKO.useStok) {
-      CART.forEach(c => {
-          let masterBrg = BARANG.find(b => b.kode === c.kode);
-          if (masterBrg) masterBrg.stok = (masterBrg.stok || 0) - c.qty;
+  if (currentEditTrxId) {
+      let idx = TRX.findIndex(x => x.id === currentEditTrxId);
+      if(idx >= 0) {
+          let oldTrx = TRX[idx];
+          if (TOKO.useStok) {
+              (oldTrx.items || []).forEach(c => { let mBrg = BARANG.find(b => b.kode === c.kode); if(mBrg) mBrg.stok = (mBrg.stok || 0) + c.qty; });
+              CART.forEach(c => { let mBrg = BARANG.find(b => b.kode === c.kode); if(mBrg) mBrg.stok = (mBrg.stok || 0) - c.qty; });
+              if(document.getElementById('pg-barang').classList.contains('on')) renderBrg();
+          }
+
+          TRX[idx] = {
+              id: currentEditTrxId, tgl: oldTrx.tgl, pelanggan: nama, wa: wa, alamat: alamat, id_cust: idCust, no_cetak: noCetak,
+              items: JSON.parse(JSON.stringify(CART)), total: total, modal: modal, bayar: bayar, dibayar: dibayar, sisa: sisa,
+              metode: (bayar==='Lunas' ? 'Cash' : oldTrx.metode),
+              kasir: curUser.nama, catatan: catatan, diskon: diskon, ongkir: ongkir, komisiNama: komisiNama, komisiNominal: komisiNominal
+          };
+      }
+      toast('✔️ Transaksi berhasil diupdate!', 2500);
+  } else {
+      if (TOKO.useStok) {
+          CART.forEach(c => { let mBrg = BARANG.find(b => b.kode === c.kode); if (mBrg) mBrg.stok = (mBrg.stok || 0) - c.qty; });
+          if(document.getElementById('pg-barang').classList.contains('on')) renderBrg();
+      }
+      TRX.unshift({
+        id:id, tgl:nowDate(), pelanggan:nama, wa:wa, alamat:alamat, id_cust:idCust, no_cetak:noCetak,
+        items:JSON.parse(JSON.stringify(CART)), total:total, modal:modal, 
+        bayar:bayar, dibayar:dibayar, sisa:sisa, metode:(bayar==='Lunas'?'Cash':''),
+        kasir:curUser.nama, catatan:catatan, diskon: diskon, ongkir: ongkir, komisiNama: komisiNama, komisiNominal: komisiNominal
       });
-      if(document.getElementById('pg-barang').classList.contains('on')) renderBrg();
+      toast('✔️ Transaksi berhasil disimpan!', 2500);
   }
 
-  TRX.unshift({
-    id:id, tgl:nowDate(), pelanggan:nama, wa:wa, alamat:alamat, id_cust:idCust, items:JSON.parse(JSON.stringify(CART)), total:total, modal:modal, 
-    bayar:bayar, dibayar:dibayar, sisa:sisa, metode:(bayar==='Lunas'?'Cash':''),
-    kasir:curUser.nama, catatan:catatan, diskon: diskon, ongkir: ongkir, komisiNama: komisiNama, komisiNominal: komisiNominal
-  });
-  
-  document.getElementById('fi-nama').value=''; document.getElementById('fi-wa').value=''; document.getElementById('fi-alamat').value=''; document.getElementById('fi-id-cust').value=''; 
-  document.getElementById('fi-kode').value=''; document.getElementById('fi-qty').value='1'; document.getElementById('fi-catatan').value=''; document.getElementById('fi-harga').value=''; 
-  document.getElementById('fi-jarak').value='0'; document.getElementById('fi-ongkir').value=''; document.getElementById('fi-diskon').value=''; 
-  document.getElementById('fi-komisi-pegawai').value=''; document.getElementById('fi-komisi-nominal').value=''; 
-  document.querySelector('input[name="fi_bayar"][value="Lunas"]').checked = true; toggleDP('fi');
-  
-  CART = []; renderCart(); saveData(); updateIdCust(); toast('✔️ Transaksi berhasil disimpan!', 2500);
+  batalEditTrx(); // Membersihkan form dan mereset status
+  saveData();
   
   if (actionType === 'nota') { setTimeout(function(){ showNota(id); }, 500); }
   if(curUser && curUser.role === 'kasir' && document.getElementById('pg-kasir-riwayat').classList.contains('on')) renderKasirRiwayat();
@@ -2000,13 +2116,15 @@ function renderTrx(){
   var rows=data.map(t => {
     let trxItems = t.items || [{kode: t.kode, barang: t.barang, qty: t.qty, harga: t.harga, total: t.total}];
     let brgStr = trxItems.map(i => `<span style="font-size:12px">${i.barang} (x${i.qty})</span>`).join('<br>');
-    let delBtn = (curUser && curUser.role === 'boss') ? `<button class="btn btn-red btn-xs" onclick="hapusTrx('${t.id}')" style="margin-left:4px">Hapus</button>` : '';
+    let delBtn = (curUser && curUser.role === 'boss') ? `<button class="btn btn-red btn-xs" onclick="hapusTrx('${t.id}')">Hapus</button>` : '';
+    let editBtn = `<button class="btn btn-amber btn-xs" onclick="editTrx('${t.id}')">Edit</button>`;
 
     return `<tr><td class="mono">${t.id}<br><span style="font-size:10px;color:var(--tx3)">${t.tgl}</span></td>
       <td style="font-weight:600">${t.pelanggan}<br><span style="font-size:10px;color:var(--tx3)">ID: ${t.id_cust||t.wa||'-'}</span></td>
       <td>${brgStr}</td><td style="font-weight:800;color:var(--blue-d)">${fmtRp(t.total)}</td><td>${badgeBayar(t.bayar)}</td>
-      <td>${t.sisa>0?`<button class="btn btn-green btn-xs" onclick="bukaPelunasan('${t.id}')">Pelunasan</button> `:''}
-      <button class="btn btn-ghost btn-xs" onclick="showNota('${t.id}')">Nota</button>${delBtn}</td></tr>`;
+      <td><div style="display:flex; gap:6px; flex-wrap:wrap;">${t.sisa>0?`<button class="btn btn-green btn-xs" onclick="bukaPelunasan('${t.id}')">Pelunasan</button>`:''}
+      ${editBtn}
+      <button class="btn btn-ghost btn-xs" onclick="showNota('${t.id}')">Nota</button>${delBtn}</div></td></tr>`;
   }).join('');
   document.getElementById('trx-tbl').innerHTML=`<table><thead><tr><th>ID / Tgl</th><th>Pelanggan</th><th>Detail Pesanan</th><th>Total Biaya</th><th>Bayar</th><th>Aksi</th></tr></thead><tbody>${rows||'<tr><td colspan="6" style="text-align:center;padding:24px;color:var(--tx3)">Belum ada transaksi</td></tr>'}</tbody></table>`;
 }
@@ -2023,7 +2141,7 @@ function renderPiutang(){
   document.getElementById('piu-stats').innerHTML= sc('Jumlah Tunggakan',data.length+' transaksi','color:var(--red)','','color:var(--tx2)')+ sc('Total Piutang Mengendap',fmtRp(tot),'color:var(--red)','Wajib ditagih','color:var(--red)')+ sc('Tunggakan Terbesar',fmtRp(mx),'color:var(--amber)','','color:var(--tx2)');
     
   var rows=data.map(t => `<tr><td style="font-weight:600;">${t.pelanggan}<br><span class="mono" style="font-weight:400; color:var(--tx2)">ID: ${t.id_cust||t.wa||'-'}</span></td><td>${t.wa}</td><td style="font-weight:800;color:var(--red)">${fmtRp(t.sisa)}</td>
-      <td><button class="btn btn-green btn-xs" onclick="bukaPelunasan('${t.id}')">Lunas</button> <button class="btn btn-wa btn-xs" onclick="waReminder('${t.wa}','${t.pelanggan}',${t.sisa})">WA Standar</button> <button class="btn btn-ai btn-xs" onclick="waReminderAI('${t.wa}','${t.pelanggan}',${t.sisa})">✨ WA Pintar</button></td></tr>`).join('');
+      <td><div style="display:flex; gap:6px; flex-wrap:wrap;"><button class="btn btn-green btn-xs" onclick="bukaPelunasan('${t.id}')">Lunas</button> <button class="btn btn-wa btn-xs" onclick="waReminder('${t.wa}','${t.pelanggan}',${t.sisa})">WA Standar</button> <button class="btn btn-ai btn-xs" onclick="waReminderAI('${t.wa}','${t.pelanggan}',${t.sisa})">✨ WA Pintar</button></div></td></tr>`).join('');
   document.getElementById('piu-tbl').innerHTML=`<table><thead><tr><th>Pelanggan</th><th>WhatsApp</th><th>Sisa Tagihan</th><th>Aksi Pelunasan</th></tr></thead><tbody>${rows||'<tr><td colspan="4" style="text-align:center">Tidak ada data piutang.</td></tr>'}</tbody></table>`;
 }
 function waReminder(wa,nama,sisa){
@@ -2142,7 +2260,7 @@ function renderPengeluaran(){
   var rows=PENGELUARAN.map(function(v,i){
     let ketExtra = v.vendor ? `<br><span style="font-size:10px;color:var(--tx3)">Vendor: ${v.vendor}</span>` : '';
     let isHutang = v.status === 'Hutang' || v.status === 'DP';
-    let delBtn = isBoss ? `<button class="btn btn-red btn-xs" onclick="hapusPengeluaran('${v.id}')" style="margin-left:4px">Hapus</button>` : '';
+    let delBtn = isBoss ? `<button class="btn btn-red btn-xs" onclick="hapusPengeluaran('${v.id}')">Hapus</button>` : '';
     
     let tagihanHtml = `${fmtRp(v.total)}`;
     if (v.status === 'DP') tagihanHtml += `<br><span style="font-size:10px;color:var(--amber-d)">DP: ${fmtRp(v.dibayar)}</span><br><span style="font-size:10px;color:var(--red)">Sisa: ${fmtRp(v.sisa)}</span>`;
@@ -2153,7 +2271,7 @@ function renderPengeluaran(){
       <td><span class="badge bg-gray">${v.kategori}</span></td>
       <td style="font-weight:800;color:var(--amber-d)">${tagihanHtml}</td>
       <td>${badgeBayar(v.status)}</td>
-      <td>${isHutang?`<button class="btn btn-green btn-xs" onclick="lunasPengeluaran(${i})">Tandai Lunas</button>`:''}${delBtn}</td></tr>`;
+      <td><div style="display:flex; gap:6px; flex-wrap:wrap;">${isHutang?`<button class="btn btn-green btn-xs" onclick="lunasPengeluaran(${i})">Tandai Lunas</button>`:''}${delBtn}</div></td></tr>`;
   }).join('');
   document.getElementById('pengeluaran-tbl').innerHTML=`<table><thead><tr><th>ID / Tgl</th><th>Rangkuman Nota</th><th>Kategori</th><th>Total Tagihan</th><th>Status</th><th>Aksi</th></tr></thead><tbody>${rows||'<tr><td colspan="6" style="text-align:center">Data kosong.</td></tr>'}</tbody></table>`;
 }
@@ -2169,7 +2287,7 @@ function renderHutangPengeluaran(){
   var data=PENGELUARAN.filter(v => (v.status==='Hutang' || v.status==='DP') && v.kategori !== 'Belanja Vendor / Maklon Cetak');
   var tot=data.reduce((s,v)=>s+(v.sisa !== undefined ? v.sisa : v.total),0);
   document.getElementById('hp-stats').innerHTML= sc('Tagihan Toko Belum Bayar',data.length+' tagihan','color:var(--red)','','color:var(--tx2)')+ sc('Total Hutang Operasional',fmtRp(tot),'color:var(--red)','Wajib disiapkan','color:var(--red)');
-  var rows=data.map((v,i) => `<tr><td style="font-weight:600">${v.ket}</td><td class="mono">${v.tgl}</td><td style="font-weight:800;color:var(--red)">${fmtRp(v.sisa !== undefined ? v.sisa : v.total)}</td><td><button class="btn btn-green btn-xs" onclick="lunasPengeluaran(${PENGELUARAN.indexOf(v)})">Bayar Tagihan Ini</button></td></tr>`).join('');
+  var rows=data.map((v,i) => `<tr><td style="font-weight:600">${v.ket}</td><td class="mono">${v.tgl}</td><td style="font-weight:800;color:var(--red)">${fmtRp(v.sisa !== undefined ? v.sisa : v.total)}</td><td><div style="display:flex; gap:6px; flex-wrap:wrap;"><button class="btn btn-green btn-xs" onclick="lunasPengeluaran(${PENGELUARAN.indexOf(v)})">Bayar Tagihan Ini</button></div></td></tr>`).join('');
   document.getElementById('hp-tbl').innerHTML=`<table><thead><tr><th>Keterangan Tagihan</th><th>Tanggal</th><th>Sisa Nominal</th><th>Aksi Pembayaran</th></tr></thead><tbody>${rows||'<tr><td colspan="4" style="text-align:center">Tidak ada hutang operasional.</td></tr>'}</tbody></table>`;
 }
 
@@ -2177,7 +2295,7 @@ function renderHutangVendor(){
   var data = PENGELUARAN.filter(v => (v.status==='Hutang' || v.status==='DP') && v.kategori === 'Belanja Vendor / Maklon Cetak');
   var tot = data.reduce((s,v)=>s+(v.sisa !== undefined ? v.sisa : v.total),0);
   document.getElementById('hv-stats').innerHTML= sc('Kasbon ke Vendor',data.length+' nota belanja','color:var(--red)','Ke Pihak Vendor/Toko Luar','color:var(--tx2)')+ sc('Total Kasbon Kulakan',fmtRp(tot),'color:var(--red)','Modal wajib bayar','color:var(--red)');
-  var rows=data.map((v,i) => `<tr><td class="mono">${v.tgl}</td><td style="font-weight:600">${v.vendor||'-'}</td><td style="font-size:12px;color:var(--tx)">${v.ket}</td><td style="font-weight:800;color:var(--red)">${fmtRp(v.sisa !== undefined ? v.sisa : v.total)}</td><td><button class="btn btn-green btn-xs" onclick="lunasPengeluaran(${PENGELUARAN.indexOf(v)})">Tandai Sudah Transfer</button></td></tr>`).join('');
+  var rows=data.map((v,i) => `<tr><td class="mono">${v.tgl}</td><td style="font-weight:600">${v.vendor||'-'}</td><td style="font-size:12px;color:var(--tx)">${v.ket}</td><td style="font-weight:800;color:var(--red)">${fmtRp(v.sisa !== undefined ? v.sisa : v.total)}</td><td><div style="display:flex; gap:6px; flex-wrap:wrap;"><button class="btn btn-green btn-xs" onclick="lunasPengeluaran(${PENGELUARAN.indexOf(v)})">Tandai Sudah Transfer</button></div></td></tr>`).join('');
   document.getElementById('hv-tbl').innerHTML=`<table><thead><tr><th>Tgl Belanja</th><th>Nama Vendor / Toko</th><th>Rangkuman Nota</th><th>Sisa Tagihan Vendor</th><th>Aksi Pelunasan</th></tr></thead><tbody>${rows||'<tr><td colspan="5" style="text-align:center">Tidak ada hutang belanja ke vendor saat ini.</td></tr>'}</tbody></table>`;
 }
 
@@ -2190,7 +2308,7 @@ function renderUser(){
       <td class="mono">${u.u}</td>
       <td><span class="badge ${cl}">${u.role.toUpperCase()}</span></td>
       <td><span class="badge ${u.aktif?'bg-green':'bg-red'}">${u.aktif?'Aktif':'Nonaktif'}</span></td>
-      <td><button class="btn btn-ghost btn-xs" onclick="editUser(${i})">Edit</button> <button class="btn btn-${u.aktif?'red':'green'} btn-xs" onclick="toggleUser(${i})">${u.aktif?'Nonaktifkan':'Aktifkan'}</button></td></tr>`;
+      <td><div style="display:flex; gap:6px; flex-wrap:wrap;"><button class="btn btn-ghost btn-xs" onclick="editUser(${i})">Edit</button> <button class="btn btn-${u.aktif?'red':'green'} btn-xs" onclick="toggleUser(${i})">${u.aktif?'Nonaktifkan':'Aktifkan'}</button></div></td></tr>`;
   }).join('');
   let tbl = document.getElementById('user-tbl');
   if(tbl) tbl.innerHTML=`<table><thead><tr><th>Identitas Karyawan</th><th>Username Akses</th><th>Level Role</th><th>Status Akun</th><th>Aksi</th></tr></thead><tbody>${rows||'<tr><td colspan="5" align="center">Tidak ada akun</td></tr>'}</tbody></table>`;
@@ -2210,7 +2328,7 @@ function renderPegawaiData() {
     renderUser(); // Render tabel user login (yang lama)
     
     // Render Tabel Pegawai Fisik (Baru)
-    var rows = PEGAWAI.map((p, i) => `<tr><td style="font-weight:700;">${p.nama}</td><td><span class="badge bg-gray">${p.posisi}</span></td><td><button class="btn btn-red btn-xs" onclick="hapusPegawai(${i})">Hapus</button></td></tr>`).join('');
+    var rows = PEGAWAI.map((p, i) => `<tr><td style="font-weight:700;">${p.nama}</td><td><span class="badge bg-gray">${p.posisi}</span></td><td><div style="display:flex; gap:6px; flex-wrap:wrap;"><button class="btn btn-red btn-xs" onclick="hapusPegawai(${i})">Hapus</button></div></td></tr>`).join('');
     document.getElementById('pegawai-tbl').innerHTML = `<table><thead><tr><th>Nama Panggilan</th><th>Posisi Pekerjaan</th><th>Aksi</th></tr></thead><tbody>${rows||'<tr><td colspan="3" style="text-align:center">Belum ada data pegawai fisik.</td></tr>'}</tbody></table>`;
 }
 function openModalPegawai() { document.getElementById('mpg-nama').value=''; document.getElementById('mpg-posisi').value=''; openModal('mo-pegawai'); }
@@ -2224,7 +2342,7 @@ function hapusPegawai(i) { if(confirm("Yakin hapus pegawai ini?")) { PEGAWAI.spl
 function renderPelanggan(){
   var rows = PELANGGAN.map((p, i) => {
     let countTrx = TRX.filter(t => t.pelanggan.toLowerCase() === p.nama.toLowerCase()).length;
-    return `<tr><td style="font-weight:600">${p.nama}</td><td class="mono">${p.id_cust||p.wa||'-'}</td><td>${p.wa||'-'}</td><td>${p.alamat||'-'}</td><td><span class="badge bg-blue">${countTrx} Nota</span></td><td><button class="btn btn-red btn-xs" onclick="hapusPelanggan(${i})">Hapus</button></td></tr>`;
+    return `<tr><td style="font-weight:600">${p.nama}</td><td class="mono">${p.id_cust||p.wa||'-'}</td><td>${p.wa||'-'}</td><td>${p.alamat||'-'}</td><td><span class="badge bg-blue">${countTrx} Nota</span></td><td><div style="display:flex; gap:6px; flex-wrap:wrap;"><button class="btn btn-red btn-xs" onclick="hapusPelanggan(${i})">Hapus</button></div></td></tr>`;
   }).join('');
   document.getElementById('pel-tbl').innerHTML=`<table><thead><tr><th>Nama Pelanggan</th><th>ID Customer</th><th>No. WhatsApp</th><th>Alamat Lengkap</th><th>Total Transaksi</th><th>Aksi</th></tr></thead><tbody>${rows||'<tr><td colspan="6" style="text-align:center">Data kosong.</td></tr>'}</tbody></table>`;
 }
@@ -2233,7 +2351,7 @@ function simpanPelanggan(){
     let nama = document.getElementById('mp-nama').value.trim(); 
     let wa = document.getElementById('mp-wa').value.trim();
     if(!nama){alert("Nama wajib diisi!");return;} 
-    let newId = wa ? wa : ('CUST-' + String(PELANGGAN.length+1).padStart(3,'0'));
+    let newId = generateCustId();
     PELANGGAN.push({nama:nama, wa:wa, alamat:document.getElementById('mp-alamat').value.trim(), id_cust: newId}); 
     saveData(); closeModal('mo-pelanggan'); renderPelanggan(); populateFiBrg(); toast('Pelanggan ditambahkan!'); 
 }
@@ -2242,7 +2360,7 @@ function hapusPelanggan(i){ if(confirm("Yakin hapus?")) { PELANGGAN.splice(i,1);
 function renderVendor(){
   var rows = VENDORS.map((v, i) => {
       let count = PENGELUARAN.filter(t => t.vendor && t.vendor.toLowerCase() === v.nama.toLowerCase()).length;
-      return `<tr><td style="font-weight:600">${v.nama}</td><td>${v.kontak||'-'}</td><td><span class="badge bg-purple">${count} Nota Kulakan</span></td><td><button class="btn btn-red btn-xs" onclick="hapusVendor(${i})">Hapus</button></td></tr>`;
+      return `<tr><td style="font-weight:600">${v.nama}</td><td>${v.kontak||'-'}</td><td><span class="badge bg-purple">${count} Nota Kulakan</span></td><td><div style="display:flex; gap:6px; flex-wrap:wrap;"><button class="btn btn-red btn-xs" onclick="hapusVendor(${i})">Hapus</button></div></td></tr>`;
   }).join('');
   document.getElementById('vnd-tbl').innerHTML=`<table><thead><tr><th>Nama Vendor Makelar</th><th>Kontak/Spesialisasi</th><th>Total Kulakan</th><th>Aksi</th></tr></thead><tbody>${rows||'<tr><td colspan="4" style="text-align:center">Data kosong.</td></tr>'}</tbody></table>`;
 }
@@ -2257,7 +2375,7 @@ function renderBrg(){
   var rows=BARANG.map(function(b,i){
     var tierStr=b.tiers.map((t,j)=>{var prev=j>0?b.tiers[j-1].max+1:1;return prev+'-'+(t.max===9999?'DST':t.max)+': <b style="color:var(--tx)">Rp '+fmt(t.h)+'</b>';}).join(' <br> ');
     let stokHtml = TOKO.useStok ? `<td><span class="badge ${b.stok>0?'bg-blue':'bg-red'}">${b.stok||0} ${b.satuan}</span></td>` : '';
-    return `<tr><td class="mono" style="font-weight:800;color:var(--blue-d)">${b.kode}</td><td style="font-weight:600">${b.nama}</td><td>${b.satuan}</td><td>${b.kat}</td>${stokHtml}<td style="font-size:11px;color:var(--tx2);line-height:1.4">${tierStr}</td><td style="color:var(--amber-d);font-weight:600">${fmtRp(b.modal)}</td><td><button class="btn btn-ghost btn-xs" onclick="editBrg(${i})">Edit</button> <button class="btn btn-red btn-xs" onclick="hapusBrg(${i})">Hapus</button></td></tr>`;
+    return `<tr><td class="mono" style="font-weight:800;color:var(--blue-d)">${b.kode}</td><td style="font-weight:600">${b.nama}</td><td>${b.satuan}</td><td>${b.kat}</td>${stokHtml}<td style="font-size:11px;color:var(--tx2);line-height:1.4">${tierStr}</td><td style="color:var(--amber-d);font-weight:600">${fmtRp(b.modal)}</td><td><div style="display:flex; gap:6px; flex-wrap:wrap;"><button class="btn btn-ghost btn-xs" onclick="editBrg(${i})">Edit</button> <button class="btn btn-red btn-xs" onclick="hapusBrg(${i})">Hapus</button></div></td></tr>`;
   }).join('');
   let stokTh = TOKO.useStok ? `<th>Stok Aktual</th>` : '';
   document.getElementById('brg-tbl').innerHTML=`<table><thead><tr><th>Kode</th><th>Nama Cetakan</th><th>Sat</th><th>Kategori</th>${stokTh}<th>Tier Harga (Rp)</th><th>Modal Pokok</th><th>Aksi</th></tr></thead><tbody>${rows}</tbody></table>`;
@@ -2356,7 +2474,7 @@ function simpanBarang(){
 
 var editBrgVndIdx = -1;
 function renderBrgVendor(){
-  var rows = BARANG_VENDOR.map((b,i) => `<tr><td style="font-weight:600">${b.nama}</td><td>${b.vendor}</td><td style="color:var(--blue);font-weight:800">${fmtRp(b.harga)}</td><td><button class="btn btn-ghost btn-xs" onclick="editBrgVendor(${i})">Edit</button> <button class="btn btn-red btn-xs" onclick="hapusBrgVendor(${i})">Hapus</button></td></tr>`).join('');
+  var rows = BARANG_VENDOR.map((b,i) => `<tr><td style="font-weight:600">${b.nama}</td><td>${b.vendor}</td><td style="color:var(--blue);font-weight:800">${fmtRp(b.harga)}</td><td><div style="display:flex; gap:6px; flex-wrap:wrap;"><button class="btn btn-ghost btn-xs" onclick="editBrgVendor(${i})">Edit</button> <button class="btn btn-red btn-xs" onclick="hapusBrgVendor(${i})">Hapus</button></div></td></tr>`).join('');
   document.getElementById('brgvnd-tbl').innerHTML=`<table><thead><tr><th>Nama Barang / Maklon Vendor</th><th>Vendor Pemasok Utama</th><th>Harga Beli Standar (Rp)</th><th>Aksi</th></tr></thead><tbody>${rows||'<tr><td colspan="4" style="text-align:center; padding:20px;">Belum ada master data barang vendor</td></tr>'}</tbody></table>`;
 }
 function openModalBrgVendor() { editBrgVndIdx = -1; document.getElementById('mo-barang-vendor-title').textContent = 'Tambah Barang Vendor'; document.getElementById('mbv-nama').value = ''; document.getElementById('mbv-vendor').value = ''; document.getElementById('mbv-harga').value = ''; openModal('mo-barang-vendor'); }
@@ -2465,9 +2583,10 @@ function renderDashAdmin(){
   document.getElementById('da-stats').innerHTML= sc('Total Omzet Berjalan',fmtRp(omzet),'color:var(--blue)','Total','color:var(--tx2)')+ sc('Volume Transaksi',TRX.length+' transaksi','color:var(--purple)','Semua waktu','color:var(--tx2)');
   var rows=TRX.slice(0,10).map(t => {
     let mainItem = (t.items && t.items.length > 0) ? t.items[0].barang : 'Pesanan'; let extraItems = (t.items && t.items.length > 1) ? ` +${t.items.length-1} lgi` : '';
-    return `<tr><td class="mono">${t.id}</td><td style="font-weight:600">${t.pelanggan}</td><td>${mainItem}${extraItems}</td><td style="font-weight:800;color:var(--blue-d)">${fmtRp(t.total)}</td><td>${badgeBayar(t.bayar)}</td><td style="font-size:11px;color:var(--tx2)">${t.kasir.split(' ')[0]}</td></tr>`;
+    let editBtn = `<button class="btn btn-amber btn-xs" onclick="editTrx('${t.id}')">Edit</button>`;
+    return `<tr><td class="mono">${t.id}</td><td style="font-weight:600">${t.pelanggan}</td><td>${mainItem}${extraItems}</td><td style="font-weight:800;color:var(--blue-d)">${fmtRp(t.total)}</td><td>${badgeBayar(t.bayar)}</td><td><div style="display:flex; gap:6px; flex-wrap:wrap;">${editBtn}</div></td></tr>`;
   }).join('');
-  document.getElementById('da-trx').innerHTML=`<table><thead><tr><th>ID Nota</th><th>Pelanggan</th><th>Barang</th><th>Total Harga</th><th>Status Bayar</th><th>Kasir</th></tr></thead><tbody>${rows||'<tr><td colspan="6" style="text-align:center">Data Kosong</td></tr>'}</tbody></table>`;
+  document.getElementById('da-trx').innerHTML=`<table><thead><tr><th>ID Nota</th><th>Pelanggan</th><th>Barang</th><th>Total Harga</th><th>Status Bayar</th><th>Aksi</th></tr></thead><tbody>${rows||'<tr><td colspan="6" style="text-align:center">Data Kosong</td></tr>'}</tbody></table>`;
 }
 
 /* ════════════════ KASIR RIWAYAT & BAGIKAN GAMBAR ════════════════ */
@@ -2476,13 +2595,14 @@ function renderKasirRiwayat(){
   var rows = data.map(t => {
     let trxItems = t.items || [{kode: t.kode, barang: t.barang, qty: t.qty, harga: t.harga, total: t.total}];
     let brgStr = trxItems.length > 0 ? trxItems.length + ' Item' : 'Pesanan';
+    let editBtn = `<button class="btn btn-amber btn-xs" onclick="editTrx('${t.id}')">Edit</button>`;
     return `<tr>
       <td class="mono">${t.id}<br><span style="font-size:10px;color:var(--tx3)">${t.tgl}</span></td>
       <td style="font-weight:600">${t.pelanggan}</td>
       <td>${brgStr}</td>
       <td style="font-weight:800;color:var(--blue-d)">${fmtRp(t.total)}</td>
       <td>${badgeBayar(t.bayar)}</td>
-      <td><button class="btn btn-ghost btn-xs" onclick="showNota('${t.id}')">Lihat Nota</button></td>
+      <td><div style="display:flex; gap:6px; flex-wrap:wrap;">${editBtn} <button class="btn btn-ghost btn-xs" onclick="showNota('${t.id}')">Lihat Nota</button></div></td>
       </tr>`;
   }).join('');
   let tbl = document.getElementById('kasir-riwayat-tbl');
@@ -2583,6 +2703,7 @@ function buildNotaInner(t, isTampil) {
         <div class="n-row"><span class="n-lbl">ID Nota</span><span class="n-val" style="font-family:var(--mono); color:#475569; font-size:11px;">${t.id}</span></div>
         <div class="n-row"><span class="n-lbl">Tanggal</span><span class="n-val">${t.tgl}</span></div>
         <div class="n-row" style="align-items:flex-start;"><span class="n-lbl">Pelanggan</span><span class="n-val" style="text-align:right">${t.pelanggan}<br><span style="font-size:10px;color:#64748B;font-family:var(--mono)">ID: ${t.id_cust||t.wa||'-'}</span></span></div>
+        ${t.no_cetak ? `<div class="n-row" style="align-items:flex-start; margin-top:-6px;"><span class="n-lbl">No. Antrean/Cetak</span><span class="n-val" style="text-align:right; font-size:15px; font-weight:900; color:#2563EB;">${t.no_cetak}</span></div>` : ''}
         ${t.alamat ? `<div class="n-row" style="align-items:flex-start; margin-top:-6px;"><span class="n-lbl">Alamat</span><span class="n-val" style="text-align:right; font-size:11px; color:#64748B; max-width:65%; line-height:1.4">${t.alamat}</span></div>` : ''}
         
         <div style="margin-top:20px; margin-bottom:12px; font-size:12px; font-weight:800; color:#94A3B8; text-transform:uppercase; letter-spacing:1px;">Daftar Pesanan</div>
@@ -2618,7 +2739,9 @@ function kirimWANota(){
   let ekstraBiaya = '';
   if(notaForWA.diskon > 0) ekstraBiaya += `➖ *Diskon:* -${fmtRp(notaForWA.diskon)}\n`; if(notaForWA.ongkir > 0) ekstraBiaya += `🛵 *Ongkir:* +${fmtRp(notaForWA.ongkir)}\n`;
 
-  var msg = `Halo *${notaForWA.pelanggan}*, berikut rincian pesanan Anda dari *ABUNAWAS (Percetakan & Konveksi)*.\n\n📄 ${docTitle}\n🧾 *ID Nota:* ${notaForWA.id}\n📅 *Tanggal:* ${notaForWA.tgl}\n\n📦 *DAFTAR PESANAN*\n${itemTexts}\n${ekstraBiaya}\n💰 *TOTAL TAGIHAN AKHIR: ${fmtRp(notaForWA.total)}*\n${notaForWA.sisa > 0 ? statusText : '✅ *Status: LUNAS*'}\n📍 *Pengambilan barang di:* Abunawas Percetakan & Konveksi${alamatText}\n(Kasir: ${notaForWA.kasir})\n\n*NOTED :*\n- HASIL WARNA CETAKAN TIDAK BISA 100% SAMA DENGAN WARNA LAYAR\n- BARANG TIDAK DIAMBIL LEBIH DARI 7 HARI DIANGGAP HILANG\n\nTerima kasih sudah mempercayakan pesanan Anda pada kami! 🙏`;
+  let noCetakText = notaForWA.no_cetak ? `\n🖨️ *No. Cetak:* ${notaForWA.no_cetak}` : '';
+
+  var msg = `Halo *${notaForWA.pelanggan}*, berikut rincian pesanan Anda dari *ABUNAWAS (Percetakan & Konveksi)*.\n\n📄 ${docTitle}\n🧾 *ID Nota:* ${notaForWA.id}${noCetakText}\n📅 *Tanggal:* ${notaForWA.tgl}\n\n📦 *DAFTAR PESANAN*\n${itemTexts}\n${ekstraBiaya}\n💰 *TOTAL TAGIHAN AKHIR: ${fmtRp(notaForWA.total)}*\n${notaForWA.sisa > 0 ? statusText : '✅ *Status: LUNAS*'}\n📍 *Pengambilan barang di:* Abunawas Percetakan & Konveksi${alamatText}\n(Kasir: ${notaForWA.kasir})\n\n*NOTED :*\n- HASIL WARNA CETAKAN TIDAK BISA 100% SAMA DENGAN WARNA LAYAR\n- BARANG TIDAK DIAMBIL LEBIH DARI 7 HARI DIANGGAP HILANG\n\nTerima kasih sudah mempercayakan pesanan Anda pada kami! 🙏`;
   if(notaForWA.wa){ sendWA(notaForWA.wa, msg); } else { alert("Pesan WA yang akan dikirim:\n\n" + msg); }
 }
 
@@ -2656,7 +2779,6 @@ let deferredPrompt;
 window.addEventListener('beforeinstallprompt', (e) => {
   e.preventDefault();
   deferredPrompt = e;
-  // Munculkan tombol install jika aplikasi belum diinstall
   const installBtn = document.getElementById('btn-install');
   if(installBtn) installBtn.style.display = 'block';
 });
@@ -2674,9 +2796,7 @@ function installApp() {
   }
 }
 
-// Register Service Worker untuk dukungan Install PWA
 if ('serviceWorker' in navigator) {
-  // Menggunakan file eksternal 'sw.js' untuk menghindari error blob protocol
   navigator.serviceWorker.register('sw.js').catch(function(err) {
       console.log('Catatan PWA: Untuk mengaktifkan fitur Install Aplikasi, buat file sw.js di GitHub Anda yang berisi: self.addEventListener("fetch", function(e) { });');
   });
